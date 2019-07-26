@@ -1,6 +1,5 @@
 'use strict';
 
-const auth = require('./common/auth').authenticate('jwt');
 const event = require('./event');
 const express = require('express');
 const get = require('lodash/get');
@@ -12,7 +11,7 @@ const router = express.Router();
 router.use('/ping', (_, res) => res.jsend.success(null));
 router.use('/', parseOptions);
 router.use(user.path, user.router);
-router.use(event.path, auth, event.router);
+router.use(event.path, event.router);
 
 module.exports = router;
 
