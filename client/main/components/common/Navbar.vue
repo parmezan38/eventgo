@@ -4,34 +4,14 @@
     role="navigation"
     aria-label="main navigation">
     <div class="navbar-brand">
-      <router-link to="/" class="navbar-item">APP STARTER</router-link>
-    </div>
-    <div v-if="user" class="navbar-menu">
-      <div class="navbar-end">
-        <div class="navbar-item has-dropdown is-hoverable user-dropdown">
-          <a href="#" class="navbar-link">
-            <span class="mdi mdi-account-circle"></span>{{ user.email }}
-          </a>
-          <div class="navbar-dropdown is-right">
-            <a @click.prevent="logout" href="#" class="navbar-item">
-              <span class="mdi mdi-logout"></span>Logout
-            </a>
-          </div>
-        </div>
-      </div>
+      <router-link to="/" class="navbar-item">EVENTGO</router-link>
     </div>
   </nav>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
-
 export default {
   name: 'main-navbar',
-  computed: {
-    ...mapState('auth', ['user'])
-  },
-  methods: mapActions('auth', ['logout']),
   mounted() {
     // NOTE: Add appropriate css class to <html> element according to:
     //       https://bulma.io/documentation/components/navbar/#fixed-navbar

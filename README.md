@@ -1,3 +1,3 @@
-# APP_STARTER
+# EVENTGO
 
 >Under construction :construction:

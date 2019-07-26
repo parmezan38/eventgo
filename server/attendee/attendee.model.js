@@ -20,10 +20,7 @@ class Attendee extends Model {
     };
   }
 
-  static associate({ Event, User }) {
-    this.belongsTo(User, {
-      foreignKey: { name: 'userId', field: 'user_id' }
-    });
+  static associate({ Event }) {
     this.belongsTo(Event, {
       foreignKey: { name: 'eventId', field: 'event_id' }
     });
