@@ -1,49 +1,30 @@
 <template>
   <div>
     <navbar/>
+    <new-value
+      :visible="newNameDialog"
+      @close="newNameDialog = false"
+      @newName="createNewUser"
+      title="Create Username"
+      type="name"/>
     <v-layout row justify-center>
-      <v-dialog
-        v-model="dialog"
-        persistent
-        max-width="600px">
-        <v-card>
-          <v-card-title>
-            <span class="headline">New Event</span>
-          </v-card-title>
-          <v-card-text>
-            <v-container grid-list-md>
-              <v-layout wrap>
-                <v-flex xs12 sm10 md10>
-                  <v-text-field
-                    v-model="event"
-                    label="Event description">
-                  </v-text-field>
-                  <div :class="['message', { 'error' : message.error }]">
-                    {{ message.text }}
-                  </div>
-                </v-flex>
-              </v-layout>
-            </v-container>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn @click="dialog = false">Close</v-btn>
-            <v-btn @click="post">Post</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+      <new-value
+        :visible="newEventDialog"
+        :message="message"
+        @close="newEventDialog = false"
+        @newEvent="post"
+        @update="updateEvent"
+        type="event"/>
     </v-layout>
     <v-container>
-      <div
-        v-for="(event, index) in events"
-        :key="index">
+      <div v-for="(event, index) in events" :key="index">
         <span>{{ event.name }}</span>
         <span>{{ event.start | format }}</span>
         <span>{{ event.attendees.length }}</span>
         <v-btn @click="attend(event.id)">Attend</v-btn>
       </div>
     </v-container>
-    <add-button @onClick="dialog = true"/>
+    <add-button @onClick="newEventDialog = true"/>
   </div>
 </template>
 
@@ -53,6 +34,7 @@ import api from '@/main/api/event';
 import format from 'date-fns/format';
 import io from 'socket.io-client';
 import Navbar from '@/main/components/common/Navbar';
+import NewValue from './NewValue';
 import replace from 'lodash/replace';
 import setHours from 'date-fns/set_hours';
 import setMinutes from 'date-fns/set_minutes';
@@ -72,19 +54,25 @@ export default {
       },
       events: [],
       sameTimeEvents: [],
-      dialog: false,
+      isLoggedIn: false,
+      newNameDialog: false,
+      newEventDialog: false,
       event: ''
     };
   },
   methods: {
-    post() {
-      const event = this.isValidFormat(this.event);
+    async createNewUser(name) {
+      return createSocketConnection()
+        .then(subscription => {
+          if (!subscription) return;
+          const payload = { name, subscription: JSON.stringify(subscription) };
+          return api.login(payload);
+        });
+    },
+    post(val) {
+      const event = this.isValidFormat(val);
       if (!event) return;
-      api.createEvent(event).then(result => {
-        console.log(result);
-        console.log(this.events);
-        this.dialog = false;
-      });
+      api.createEvent(event).then(result => { this.newEventDialog = false; });
     },
     getCurrentTimeEvents: throttle(function (time) {
       return api.fetchEvents({ params: { time } })
@@ -128,10 +116,8 @@ export default {
     setMessage(text, error) {
       this.message = { text, error };
       return !error;
-    }
-  },
-  watch: {
-    event(val) {
+    },
+    updateEvent(val) {
       const event = this.isValidFormat(val);
       if (!event) return;
       this.getCurrentTimeEvents(event.start);
@@ -141,9 +127,14 @@ export default {
     const ip = process.env.VUE_APP_IP;
     const port = process.env.VUE_APP_PORT;
     this.socket = io(`http://${ip}:${port}`);
-    notifyMe();
-    api.fetchEvents()
-      .then(events => { this.events = events; });
+    api.isLoggedIn()
+      .then(result => {
+        this.isLoggedIn = result;
+        this.newNameDialog = !result;
+        if (result) {
+          api.fetchEvents().then(events => { this.events = events; });
+        }
+      });
   },
   mounted() {
     this.socket.on('test', data => { console.log(data); });
@@ -154,29 +145,24 @@ export default {
   filters: {
     format: val => format(val, 'HH:mm')
   },
-  components: { AddButton, Navbar }
+  components: { AddButton, Navbar, NewValue }
 };
 
-function notifyMe() {
-  async function triggerPushNotification() {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations()
-        .then(registrations => {
-          for (let registration of registrations) { registration.unregister(); }
-          return navigator.serviceWorker.register('/sw.js', { scope: '/' });
-        })
-        .then(register => {
-          const vapidPublicKey = process.env.VUE_APP_VAPID_KEY_PUBLIC;
-          const applicationServerKey = urlBase64ToUint8Array(vapidPublicKey);
-          const options = { userVisibleOnly: true, applicationServerKey };
-          return register.pushManager.subscribe(options);
-        })
-        .then(subscription => api.login(JSON.stringify(subscription)));
-    } else {
-      console.error('Service workers are not supported in this browser');
-    }
+function createSocketConnection() {
+  if ('serviceWorker' in navigator === false) {
+    console.error('Service workers are not supported in this browser');
   }
-  triggerPushNotification();
+  return navigator.serviceWorker.getRegistrations()
+    .then(registrations => {
+      for (let registration of registrations) { registration.unregister(); }
+      return navigator.serviceWorker.register('/sw.js', { scope: '/' });
+    })
+    .then(register => {
+      const vapidPublicKey = process.env.VUE_APP_VAPID_KEY_PUBLIC;
+      const applicationServerKey = urlBase64ToUint8Array(vapidPublicKey);
+      const options = { userVisibleOnly: true, applicationServerKey };
+      return register.pushManager.subscribe(options);
+    });
 }
 
 function formatTime(hours, minutes = 0) {

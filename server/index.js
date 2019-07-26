@@ -21,9 +21,6 @@ const address = `http://${ip}:${port}`;
 database.initialize()
   .then(() => app.listen(port, ip))
   .then(server => socket(server))
-  // .then(() => {
-  //   console.log(PushSubscription);
-  // })
   .then(io => app.set('socketio', io))
   .then(() => logger.info({ port, ip }, '✈️  Server listening on', address))
   .catch(err => {

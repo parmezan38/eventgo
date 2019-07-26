@@ -8,10 +8,18 @@ const schedule = require('node-schedule');
 const subHours = require('date-fns/sub_hours');
 const subMinutes = require('date-fns/sub_minutes');
 const startOfDay = require('date-fns/start_of_day');
+const uuidv1 = require('uuid/v1');
+
+// TODO: move this to Middleware
+function isLoggedIn(req, res) {
+  if (req.session.user && req.session.user.id) return res.jsend.success(true);
+  return res.jsend.success(false);
+}
 
 // TODO: move this to User
 function login(req, res) {
-  req.session.subscription = req.body;
+  req.session.user = { id: uuidv1(), name: req.body.name };
+  req.session.subscription = req.body.subscription;
   req.session.save();
   const payload = JSON.stringify({ title: 'Radi prvi put' });
   // Web Push Test
@@ -38,9 +46,8 @@ function fetchEvents(req, res) {
 }
 
 function createEvent(req, res) {
-  const { user, body } = req;
-  const event = body;
-  event.creatorId = user.id;
+  const event = req.body;
+  event.creatorId = req.session.user.id;
   return Event.create(event)
     .then(event => {
       req.app.get('socketio').emit('created');
@@ -50,8 +57,8 @@ function createEvent(req, res) {
 }
 
 function attendEvent(req, res) {
-  const { event, user } = req;
-  const attendee = user.id;
+  const event = req.event;
+  const attendee = req.session.user.id;
   return event.addAttendees(attendee)
     .then(result => res.jsend.success(result));
 }
@@ -77,6 +84,7 @@ function createPayload({ name, min }) {
 }
 
 module.exports = {
+  isLoggedIn,
   login,
   fetchEvents,
   createEvent,

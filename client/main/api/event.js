@@ -7,6 +7,10 @@ const url = {
   attend: '/events/attend'
 };
 
+function isLoggedIn() {
+  return request.get('/events/login').then(extractData);
+}
+
 function login(body) {
   return request.post('/events/login', body).then(extractData);
 }
@@ -24,6 +28,7 @@ function attendEvent({ id }) {
 }
 
 export default {
+  isLoggedIn,
   login,
   fetchEvents,
   createEvent,

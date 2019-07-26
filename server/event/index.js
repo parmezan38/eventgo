@@ -10,6 +10,7 @@ const { NOT_FOUND } = HttpStatus;
 
 router
   // TODO: move this to User
+  .get('/login', ctrl.isLoggedIn)
   .post('/login', ctrl.login)
   .get('/', ctrl.fetchEvents)
   .post('/', ctrl.createEvent)
