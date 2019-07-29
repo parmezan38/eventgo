@@ -11,7 +11,7 @@ class Event extends Model {
         validate: { notEmpty: true, len: [2, 50] }
       },
       creatorId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         field: 'creator_id',
         allowNull: false
       },

@@ -6,14 +6,16 @@ const values = require('lodash/values');
 module.exports = {
   up: (queryInterface, Sequelize) => queryInterface.createTable('user', {
     id: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       primaryKey: true,
-      autoIncrement: true,
       allowNull: false
+    },
+    subscription: {
+      type: Sequelize.JSONB
     },
     email: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
       unique: true
     },
     password: {
@@ -21,7 +23,7 @@ module.exports = {
     },
     role: {
       type: Sequelize.ENUM(values(role)),
-      allowNull: false
+      allowNull: true
     },
     token: {
       type: Sequelize.STRING(500)
@@ -49,5 +51,5 @@ module.exports = {
       field: 'deleted_at'
     }
   }),
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('user')
+  down: queryInterface => queryInterface.dropTable('user')
 };

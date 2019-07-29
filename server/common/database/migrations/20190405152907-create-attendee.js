@@ -5,7 +5,7 @@ const TABLE_NAME = 'attendee';
 module.exports = {
   up: (queryInterface, Sequelize) => queryInterface.createTable(TABLE_NAME, {
     userId: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       primaryKey: true,
       field: 'user_id',
       references: { model: 'user', key: 'id' },

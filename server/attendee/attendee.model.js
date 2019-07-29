@@ -6,7 +6,7 @@ class Attendee extends Model {
   static fields(DataTypes) {
     return {
       userId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         field: 'user_id',
         primaryKey: true,
         unique: 'attendee_pk'
@@ -20,7 +20,10 @@ class Attendee extends Model {
     };
   }
 
-  static associate({ Event }) {
+  static associate({ Event, User }) {
+    this.belongsTo(User, {
+      foreignKey: { name: 'userId', field: 'user_id' }
+    });
     this.belongsTo(Event, {
       foreignKey: { name: 'eventId', field: 'event_id' }
     });

@@ -19,11 +19,19 @@ const values = require('lodash/values');
 class User extends Model {
   static fields(DataTypes) {
     return {
+      id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        unique: true
+      },
       email: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: { isEmail: true, notEmpty: true },
+        allowNull: true,
+        validate: { isEmail: true, notEmpty: false },
         unique: { msg: 'This email address is already in use.' }
+      },
+      subscription: {
+        type: DataTypes.JSONB
       },
       password: {
         type: DataTypes.STRING,
@@ -31,7 +39,7 @@ class User extends Model {
       },
       role: {
         type: DataTypes.ENUM(values(role)),
-        allowNull: false,
+        allowNull: true,
         defaultValue: role.RISING_LEADER
       },
       token: {
@@ -66,6 +74,16 @@ class User extends Model {
         }
       }
     };
+  }
+
+  static associate({ Attendee, Event }) {
+    this.belongsToMany(Event, {
+      as: 'attendingEvents',
+      through: Attendee,
+      foreignKey: { name: 'userId', field: 'user_id' },
+      hooks: true,
+      onDelete: 'cascade'
+    });
   }
 
   static get text() {

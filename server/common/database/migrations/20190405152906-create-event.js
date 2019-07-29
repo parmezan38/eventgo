@@ -14,7 +14,7 @@ module.exports = {
       allowNull: false
     },
     creatorId: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
       field: 'creator_id',
       references: { model: 'user', key: 'id' },
       allowNull: false
