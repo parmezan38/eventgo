@@ -7,8 +7,9 @@ const HttpStatus = require('http-status');
 const mime = require('mime');
 const map = require('lodash/map');
 const pick = require('lodash/pick');
+const uuidv1 = require('uuid/v1');
 
-const { ACCEPTED, BAD_REQUEST, CONFLICT, NOT_FOUND } = HttpStatus;
+const { ACCEPTED, BAD_REQUEST, NOT_FOUND } = HttpStatus;
 const { Op } = Sequelize;
 
 const columns = {
@@ -34,13 +35,17 @@ function list({ query: { email, role, filter }, options }, res) {
 }
 
 function create(req, res) {
-  const { body, origin } = req;
-  return User.restoreOrBuild(pick(body, inputAttrs))
-    .then(([result]) => {
-      if (result.isRejected()) return createError(CONFLICT);
-      return User.invite(result.value(), { origin });
-    })
-    .then(user => res.jsend.success(user.profile));
+  const user = {
+    id: uuidv1(),
+    name: req.body.name,
+    subscription: req.body.subscription
+  };
+  req.session.userId = user.id;
+  req.session.save();
+  return User.create(user)
+    .then(result => {
+      return res.jsend.success(result.profile);
+    });
 }
 
 function patch({ params, body }, res) {

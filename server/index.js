@@ -2,6 +2,7 @@
 
 // const { promisify } = require('util');
 const bluebird = require('bluebird');
+const { getEvents } = require('./common/jobs');
 const sequelize = require('sequelize');
 
 if (process.env.NODE_ENV !== 'production') {
@@ -23,6 +24,7 @@ database.initialize()
   .then(server => socket(server))
   .then(io => app.set('socketio', io))
   .then(() => logger.info({ port, ip }, '✈️  Server listening on', address))
+  .then(() => getEvents({ createJobs: true, app }))
   .catch(err => {
     logger.fatal(err, '🚨  Starting server failed');
     process.exit(1);

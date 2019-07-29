@@ -11,13 +11,12 @@ const { NOT_FOUND } = HttpStatus;
 router
   // TODO: move this to User
   .get('/login', ctrl.isLoggedIn)
-  .post('/login', ctrl.login)
   .get('/', ctrl.fetchEvents)
   .post('/', ctrl.createEvent)
   .post('/attend/:id', ctrl.attendEvent);
 
 router.param('id', (req, res, next, id) => {
-  return Event.findById(id, { paranoid: false })
+  return Event.findByPk(id, { paranoid: false })
     .then(event => event || createError(NOT_FOUND, 'Not found!'))
     .then(event => {
       req.event = event;
