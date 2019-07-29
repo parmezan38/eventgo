@@ -4,7 +4,7 @@
     <new-value
       :visible="newNameDialog"
       @close="newNameDialog = false"
-      @newName="createNewUser"
+      @post="createNewUser"
       title="Create Username"
       type="name"/>
     <v-layout row justify-center>
@@ -12,7 +12,7 @@
         :visible="newEventDialog"
         :message="message"
         @close="newEventDialog = false"
-        @newEvent="post"
+        @post="postEvent"
         @update="updateEvent"
         type="event"/>
     </v-layout>
@@ -30,17 +30,19 @@
 
 <script>
 import AddButton from '@/main/components/common/AddButton';
-import api from '@/main/api/event';
+import eventApi from '@/main/api/event';
 import format from 'date-fns/format';
 import io from 'socket.io-client';
 import Navbar from '@/main/components/common/Navbar';
 import NewValue from './NewValue';
+import Promise from 'bluebird';
 import replace from 'lodash/replace';
 import setHours from 'date-fns/set_hours';
 import setMinutes from 'date-fns/set_minutes';
 import setSeconds from 'date-fns/set_seconds';
 import split from 'lodash/split';
 import throttle from 'lodash/throttle';
+import userApi from '@/main/api/user';
 
 const DEFAULT_MESSAGE = '# name of event, @ start time. e.g. #event@13';
 export default {
@@ -61,26 +63,32 @@ export default {
     };
   },
   methods: {
-    async createNewUser(name) {
-      return createSocketConnection()
-        .then(subscription => {
-          if (!subscription) return;
-          const payload = { name, subscription: JSON.stringify(subscription) };
-          return api.login(payload);
+    fetchEvents() {
+      return eventApi.fetchEvents()
+        .then(events => {
+          this.events = events;
         });
     },
-    post(val) {
+    async createNewUser(name) {
+      return createSocketConnection()
+        .then(subscription => userApi.create({ name, subscription }))
+        .then(() => {
+          this.isLoggedIn = true;
+          this.newNameDialog = false;
+          this.fetchEvents();
+        });
+    },
+    postEvent(val) {
       const event = this.isValidFormat(val);
       if (!event) return;
-      api.createEvent(event).then(result => { this.newEventDialog = false; });
+      eventApi.createEvent(event).then(result => { this.newEventDialog = false; });
     },
     getCurrentTimeEvents: throttle(function (time) {
-      return api.fetchEvents({ params: { time } })
+      return eventApi.fetchEvents({ params: { time } })
         .then(events => { this.sameTimeEvents = events; });
     }, 400),
     attend(id) {
-      return api.attendEvent({ id })
-        .then(result => { console.log(result); });
+      return eventApi.attendEvent({ id }).then(result => { console.log(result); });
     },
     isValidFormat(event) {
       if (!event) return false;
@@ -127,20 +135,16 @@ export default {
     const ip = process.env.VUE_APP_IP;
     const port = process.env.VUE_APP_PORT;
     this.socket = io(`http://${ip}:${port}`);
-    api.isLoggedIn()
+    eventApi.isLoggedIn()
       .then(result => {
         this.isLoggedIn = result;
         this.newNameDialog = !result;
-        if (result) {
-          api.fetchEvents().then(events => { this.events = events; });
-        }
+        if (result) this.fetchEvents();
       });
   },
   mounted() {
     this.socket.on('test', data => { console.log(data); });
-    this.socket.on('created', () => {
-      api.fetchEvents().then(events => { this.events = events; });
-    });
+    this.socket.on('created', () => this.fetchEvents());
   },
   filters: {
     format: val => format(val, 'HH:mm')
@@ -155,14 +159,18 @@ function createSocketConnection() {
   return navigator.serviceWorker.getRegistrations()
     .then(registrations => {
       for (let registration of registrations) { registration.unregister(); }
-      return navigator.serviceWorker.register('/sw.js', { scope: '/' });
+      return Promise.map(registrations, it => it.unregister());
     })
+    .then(() => navigator.serviceWorker.register('/sw.js', { scope: '/' }))
+    .then(register => navigator.serviceWorker.ready)
     .then(register => {
+      if (!register) { console.error('oh noes'); }
       const vapidPublicKey = process.env.VUE_APP_VAPID_KEY_PUBLIC;
       const applicationServerKey = urlBase64ToUint8Array(vapidPublicKey);
       const options = { userVisibleOnly: true, applicationServerKey };
       return register.pushManager.subscribe(options);
-    });
+    })
+    .catch(err => { console.error(err); });
 }
 
 function formatTime(hours, minutes = 0) {

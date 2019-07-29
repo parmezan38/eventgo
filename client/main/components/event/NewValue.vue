@@ -21,7 +21,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn @click="$emit('close')">Close</v-btn>
-          <v-btn @click="submit">Post</v-btn>
+          <v-btn @click="post">Post</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -43,12 +43,8 @@ export default {
     };
   },
   methods: {
-    submit() {
-      if (this.type === 'event') {
-        this.$emit('newEvent', this.value);
-        return;
-      }
-      this.$emit('newName', this.value);
+    post() {
+      this.$emit('post', this.value);
     }
   },
   watch: {
