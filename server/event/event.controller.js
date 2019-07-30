@@ -1,7 +1,7 @@
 'use strict';
 
 const { Event } = require('../common/database');
-const { getEvents, separateAndCreateJobs } = require('../common/jobs');
+const { getEvents, separateAndCreateJobs } = require('../common/util/jobs');
 
 // TODO: move this to Middleware
 function isLoggedIn(req, res) {

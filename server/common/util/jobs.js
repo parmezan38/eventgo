@@ -1,4 +1,4 @@
-const { Event, User } = require('./database');
+const { Event, User } = require('../database');
 const { Op } = require('sequelize');
 const addHours = require('date-fns/add_hours');
 const endOfDay = require('date-fns/end_of_day');
