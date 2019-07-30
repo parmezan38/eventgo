@@ -31,6 +31,7 @@
 <script>
 import AddButton from '@/main/components/common/AddButton';
 import eventApi from '@/main/api/event';
+import findIndex from 'lodash/findIndex';
 import format from 'date-fns/format';
 import io from 'socket.io-client';
 import Navbar from '@/main/components/common/Navbar';
@@ -43,6 +44,7 @@ import setSeconds from 'date-fns/set_seconds';
 import split from 'lodash/split';
 import throttle from 'lodash/throttle';
 import userApi from '@/main/api/user';
+import Vue from 'vue';
 
 const DEFAULT_MESSAGE = '# name of event, @ start time. e.g. #event@13';
 export default {
@@ -144,7 +146,15 @@ export default {
   },
   mounted() {
     this.socket.on('test', data => { console.log(data); });
-    this.socket.on('created', () => this.fetchEvents());
+    this.socket.on('created', data => {
+      Vue.set(this.events, this.events.length, data.event);
+    });
+    this.socket.on('update', data => {
+      const index = findIndex(this.events, it => {
+        return data.event.id === it.id;
+      });
+      Vue.set(this.events, index, data.event);
+    });
   },
   filters: {
     format: val => format(val, 'HH:mm')
