@@ -12,6 +12,7 @@ const jsend = require('jsend').middleware;
 const morgan = require('morgan');
 const nocache = require('nocache');
 const session = require('express-session');
+const PgSession = require('connect-pg-simple')(session);
 require('express-async-errors');
 const webPush = require('web-push');
 
@@ -29,6 +30,7 @@ app.use(auth.initialize());
 app.use(origin());
 app.use(express.static(config.staticFolder));
 app.use(session({
+  store: new PgSession({ conString: process.env.DATABASE_URI }),
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
