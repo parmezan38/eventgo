@@ -18,9 +18,11 @@
     </v-layout>
     <v-container>
       <div v-for="(event, index) in events" :key="index">
+        <v-btn @click="deleteEvent(event.id)">Delete</v-btn>
         <span>{{ event.name }}</span>
         <span>{{ event.start | format }}</span>
         <span>{{ event.attendees.length }}</span>
+        <v-btn @click="withdraw(event.id)">Withdraw</v-btn>
         <v-btn @click="attend(event.id)">Attend</v-btn>
       </div>
     </v-container>
@@ -85,13 +87,19 @@ export default {
       if (!event) return;
       eventApi.createEvent(event).then(result => { this.newEventDialog = false; });
     },
+    deleteEvent(id) {
+      return eventApi.deleteEvent({ id }).then(result => { console.log(result); });
+    },
+    attend(id) {
+      return eventApi.attendEvent({ id }).then(result => { console.log(result); });
+    },
+    withdraw(id) {
+      return eventApi.withdrawFromEvent({ id }).then(result => { console.log(result); });
+    },
     getCurrentTimeEvents: throttle(function (time) {
       return eventApi.fetchEvents({ params: { time } })
         .then(events => { this.sameTimeEvents = events; });
     }, 400),
-    attend(id) {
-      return eventApi.attendEvent({ id }).then(result => { console.log(result); });
-    },
     isValidFormat(event) {
       if (!event) return false;
       const indexOfName = event.indexOf('#');
@@ -155,6 +163,12 @@ export default {
       });
       Vue.set(this.events, index, data.event);
     });
+    this.socket.on('delete', data => {
+      const index = findIndex(this.events, it => {
+        return data.event.id === it.id;
+      });
+      Vue.delete(this.events, index);
+    });
   },
   filters: {
     format: val => format(val, 'HH:mm')
@@ -174,7 +188,6 @@ function createSocketConnection() {
     .then(() => navigator.serviceWorker.register('/sw.js', { scope: '/' }))
     .then(register => navigator.serviceWorker.ready)
     .then(register => {
-      if (!register) { console.error('oh noes'); }
       const vapidPublicKey = process.env.VUE_APP_VAPID_KEY_PUBLIC;
       const applicationServerKey = urlBase64ToUint8Array(vapidPublicKey);
       const options = { userVisibleOnly: true, applicationServerKey };

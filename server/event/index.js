@@ -13,7 +13,9 @@ router
   .get('/login', ctrl.isLoggedIn)
   .get('/', ctrl.fetchEvents)
   .post('/', ctrl.createEvent)
-  .post('/attend/:id', ctrl.attendEvent);
+  .delete('/:id', ctrl.deleteEvent)
+  .post('/attend/:id', ctrl.attendEvent)
+  .delete('/withdraw/:id', ctrl.withdrawFromEvent);
 
 router.param('id', (req, res, next, id) => {
   return Event.findByPk(id, { paranoid: false })

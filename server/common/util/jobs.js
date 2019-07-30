@@ -36,7 +36,7 @@ function getEvents({ createJobs, app, query }) {
 }
 
 function separateAndCreateJobs({ event, app }) {
-  const minutes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+  const minutes = [10, 5, 0];
   minutes.forEach(min => { createJobs({ event, app, min }); });
 }
 

@@ -4,7 +4,8 @@ import request from '@/common/api/request';
 
 const url = {
   root: '/events',
-  attend: '/events/attend'
+  attend: '/events/attend',
+  withdraw: '/events/withdraw'
 };
 
 function isLoggedIn() {
@@ -20,11 +21,19 @@ function fetchEvents({ params } = {}) {
 }
 
 function createEvent(payload) {
-  return request.post(url.root, payload);
+  return request.post(url.root, payload).then(extractData);
+}
+
+function deleteEvent({ id }) {
+  return request.delete(path.join(url.root, `${id}`)).then(extractData);
 }
 
 function attendEvent({ id }) {
-  return request.post(path.join(url.attend, `${id}`));
+  return request.post(path.join(url.attend, `${id}`)).then(extractData);
+}
+
+function withdrawFromEvent({ id }) {
+  return request.delete(path.join(url.withdraw, `${id}`)).then(extractData);
 }
 
 export default {
@@ -32,5 +41,7 @@ export default {
   login,
   fetchEvents,
   createEvent,
-  attendEvent
+  deleteEvent,
+  attendEvent,
+  withdrawFromEvent
 };

@@ -9,6 +9,12 @@ const userInclude = [{
   attributes: ['id', 'subscription']
 }];
 
+function emitEvent({ req, event, type }) {
+  const { id, name, start } = event;
+  const attendees = event.attendees || [];
+  req.app.get('socketio').emit(type, { event: { id, name, start, attendees } });
+}
+
 // TODO: move this to Middleware
 function isLoggedIn(req, res) {
   if (req.session.userId) return res.jsend.success(true);
@@ -42,6 +48,16 @@ function createEvent(req, res) {
     });
 }
 
+function deleteEvent(req, res) {
+  const event = req.event;
+  if (req.session.userId !== req.event.creatorId) return;
+  return event.destroy()
+    .then(() => {
+      emitEvent({ req, event, type: 'delete' });
+      return res.jsend.success({ message: `${event.name} deleted!` });
+    });
+}
+
 function attendEvent(req, res) {
   const event = req.event;
   const userId = req.session.userId;
@@ -53,15 +69,21 @@ function attendEvent(req, res) {
     });
 }
 
-function emitEvent({ req, event, type }) {
-  const { id, name, start } = event;
-  const attendees = event.attendees || [];
-  req.app.get('socketio').emit(type, { event: { id, name, start, attendees } });
+function withdrawFromEvent(req, res) {
+  const event = req.event;
+  return event.removeAttendees(req.session.userId)
+    .then(() => event.reload({ include: userInclude }))
+    .then(event => {
+      emitEvent({ req, event, type: 'update' });
+      return res.jsend.success({ message: `Withdrawn from ${event.name}` });
+    });
 }
 
 module.exports = {
   isLoggedIn,
   fetchEvents,
   createEvent,
-  attendEvent
+  deleteEvent,
+  attendEvent,
+  withdrawFromEvent
 };
