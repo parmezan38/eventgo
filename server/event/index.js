@@ -11,11 +11,11 @@ const { NOT_FOUND } = HttpStatus;
 router
   // TODO: move this to User
   .get('/login', ctrl.isLoggedIn)
-  .get('/', ctrl.fetchEvents)
-  .post('/', ctrl.createEvent)
-  .delete('/:id', ctrl.deleteEvent)
-  .post('/attend/:id', ctrl.attendEvent)
-  .delete('/withdraw/:id', ctrl.withdrawFromEvent);
+  .get('/', ctrl.fetch)
+  .post('/', ctrl.create)
+  .delete('/:id', ctrl.destroy)
+  .post('/attend/:id', ctrl.attend)
+  .delete('/attend/:id', ctrl.unattend);
 
 router.param('id', (req, res, next, id) => {
   return Event.findByPk(id, { paranoid: false })

@@ -4,44 +4,38 @@ import request from '@/common/api/request';
 
 const url = {
   root: '/events',
-  attend: '/events/attend',
-  withdraw: '/events/withdraw'
+  attend: '/events/attend'
 };
 
 function isLoggedIn() {
   return request.get('/events/login').then(extractData);
 }
 
-function login(body) {
-  return request.post('/events/login', body).then(extractData);
-}
-
-function fetchEvents({ params } = {}) {
+function fetch({ params } = {}) {
   return request.get(url.root, { params }).then(extractData);
 }
 
-function createEvent(payload) {
+function create(payload) {
   return request.post(url.root, payload).then(extractData);
 }
 
-function deleteEvent({ id }) {
+function destroy({ id }) {
   return request.delete(path.join(url.root, `${id}`)).then(extractData);
 }
 
-function attendEvent({ id }) {
+function attend({ id }) {
   return request.post(path.join(url.attend, `${id}`)).then(extractData);
 }
 
-function withdrawFromEvent({ id }) {
-  return request.delete(path.join(url.withdraw, `${id}`)).then(extractData);
+function unattend({ id }) {
+  return request.delete(path.join(url.attend, `${id}`)).then(extractData);
 }
 
 export default {
   isLoggedIn,
-  login,
-  fetchEvents,
-  createEvent,
-  deleteEvent,
-  attendEvent,
-  withdrawFromEvent
+  fetch,
+  create,
+  destroy,
+  attend,
+  unattend
 };

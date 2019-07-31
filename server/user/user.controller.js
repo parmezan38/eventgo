@@ -42,10 +42,7 @@ function create(req, res) {
   };
   req.session.userId = user.id;
   req.session.save();
-  return User.create(user)
-    .then(result => {
-      return res.jsend.success(result.profile);
-    });
+  return User.create(user).then(user => res.jsend.success(user.id));
 }
 
 function patch({ params, body }, res) {

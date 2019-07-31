@@ -68,10 +68,7 @@ export default {
   },
   methods: {
     fetchEvents() {
-      return eventApi.fetchEvents()
-        .then(events => {
-          this.events = events;
-        });
+      return eventApi.fetch().then(events => { this.events = events; });
     },
     async createNewUser(name) {
       return createSocketConnection()
@@ -79,25 +76,27 @@ export default {
         .then(() => {
           this.isLoggedIn = true;
           this.newNameDialog = false;
-          this.fetchEvents();
+          this.fetch();
         });
     },
     postEvent(val) {
       const event = this.isValidFormat(val);
       if (!event) return;
-      eventApi.createEvent(event).then(result => { this.newEventDialog = false; });
+      eventApi.create(event).then(result => {
+        this.newEventDialog = false;
+      });
     },
     deleteEvent(id) {
-      return eventApi.deleteEvent({ id }).then(result => { console.log(result); });
+      return eventApi.destroy({ id }).then(result => { console.log(result); });
     },
     attend(id) {
-      return eventApi.attendEvent({ id }).then(result => { console.log(result); });
+      return eventApi.attend({ id }).then(result => { console.log(result); });
     },
     withdraw(id) {
-      return eventApi.withdrawFromEvent({ id }).then(result => { console.log(result); });
+      return eventApi.unattend({ id }).then(result => { console.log(result); });
     },
     getCurrentTimeEvents: throttle(function (time) {
-      return eventApi.fetchEvents({ params: { time } })
+      return eventApi.fetch({ params: { time } })
         .then(events => { this.sameTimeEvents = events; });
     }, 400),
     isValidFormat(event) {

@@ -21,7 +21,7 @@ function isLoggedIn(req, res) {
   return res.jsend.success(false);
 }
 
-function fetchEvents(req, res) {
+function fetch(req, res) {
   const { query, app } = req;
   return getEvents({ query, app })
     .then(events => {
@@ -33,7 +33,7 @@ function fetchEvents(req, res) {
     });
 }
 
-function createEvent(req, res) {
+function create(req, res) {
   const event = req.body;
   event.creatorId = req.session.userId;
   return Event.create(event)
@@ -48,7 +48,7 @@ function createEvent(req, res) {
     });
 }
 
-function deleteEvent(req, res) {
+function destroy(req, res) {
   const event = req.event;
   if (req.session.userId !== req.event.creatorId) return;
   return event.destroy()
@@ -58,7 +58,7 @@ function deleteEvent(req, res) {
     });
 }
 
-function attendEvent(req, res) {
+function attend(req, res) {
   const event = req.event;
   const userId = req.session.userId;
   return event.addAttendees(userId)
@@ -69,7 +69,7 @@ function attendEvent(req, res) {
     });
 }
 
-function withdrawFromEvent(req, res) {
+function unattend(req, res) {
   const event = req.event;
   return event.removeAttendees(req.session.userId)
     .then(() => event.reload({ include: userInclude }))
@@ -81,9 +81,9 @@ function withdrawFromEvent(req, res) {
 
 module.exports = {
   isLoggedIn,
-  fetchEvents,
-  createEvent,
-  deleteEvent,
-  attendEvent,
-  withdrawFromEvent
+  fetch,
+  create,
+  destroy,
+  attend,
+  unattend
 };
