@@ -9,7 +9,7 @@ const map = require('lodash/map');
 const pick = require('lodash/pick');
 const uuidv1 = require('uuid/v1');
 
-const { ACCEPTED, BAD_REQUEST, NOT_FOUND } = HttpStatus;
+const { ACCEPTED, NOT_FOUND } = HttpStatus;
 const { Op } = Sequelize;
 
 const columns = {

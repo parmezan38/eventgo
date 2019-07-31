@@ -26,8 +26,8 @@ function fetch(req, res) {
   return getEvents({ query, app })
     .then(events => {
       const filteredEvents = events.filter(it => {
-        const { id, name, start, attendees } = it;
-        return { id, name, start, attendees };
+        const { id, name, creatorId, start, attendees } = it;
+        return { id, name, creatorId, start, attendees };
       });
       res.jsend.success(filteredEvents);
     });
