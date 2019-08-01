@@ -3,22 +3,17 @@
 const { Event, User } = require('../common/database');
 const { getEvents, separateAndCreateJobs } = require('../common/util/jobs');
 
-const userInclude = [{
+const include = [{
   model: User,
   as: 'attendees',
   attributes: ['id', 'subscription']
 }];
 
 function emitEvent({ req, event, type }) {
-  const { id, name, start } = event;
-  const attendees = event.attendees || [];
-  req.app.get('socketio').emit(type, { event: { id, name, start, attendees } });
-}
-
-// TODO: move this to Middleware
-function isLoggedIn(req, res) {
-  if (req.session.userId) return res.jsend.success(true);
-  return res.jsend.success(false);
+  const { id, name, creatorId, start, attendees } = event;
+  req.app.get('socketio').emit(type, {
+    event: { id, name, creatorId, start, attendees }
+  });
 }
 
 function fetch(req, res) {
@@ -39,7 +34,7 @@ function create(req, res) {
   return Event.create(event)
     .then(async event => {
       await event.setAttendees(req.session.userId);
-      return event.reload({ include: userInclude });
+      return event.reload({ include });
     })
     .then(event => {
       separateAndCreateJobs({ event, app: req.app });
@@ -61,8 +56,9 @@ function destroy(req, res) {
 function attend(req, res) {
   const event = req.event;
   const userId = req.session.userId;
+  console.log(userId);
   return event.addAttendees(userId)
-    .then(() => event.reload({ include: userInclude }))
+    .then(() => event.reload({ include }))
     .then(event => {
       emitEvent({ req, event, type: 'update' });
       return res.jsend.success({ message: `Attending ${event.name}` });
@@ -72,7 +68,7 @@ function attend(req, res) {
 function unattend(req, res) {
   const event = req.event;
   return event.removeAttendees(req.session.userId)
-    .then(() => event.reload({ include: userInclude }))
+    .then(() => event.reload({ include }))
     .then(event => {
       emitEvent({ req, event, type: 'update' });
       return res.jsend.success({ message: `Withdrawn from ${event.name}` });
@@ -80,7 +76,6 @@ function unattend(req, res) {
 }
 
 module.exports = {
-  isLoggedIn,
   fetch,
   create,
   destroy,

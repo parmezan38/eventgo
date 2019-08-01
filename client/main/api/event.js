@@ -7,10 +7,6 @@ const url = {
   attend: '/events/attend'
 };
 
-function isLoggedIn() {
-  return request.get('/events/login').then(extractData);
-}
-
 function fetch({ params } = {}) {
   return request.get(url.root, { params }).then(extractData);
 }
@@ -32,7 +28,6 @@ function unattend({ id }) {
 }
 
 export default {
-  isLoggedIn,
   fetch,
   create,
   destroy,

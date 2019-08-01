@@ -18,7 +18,6 @@ import api from '@/main/api/event';
 import Event from '@/main/components/event/Event.vue';
 import findIndex from 'lodash/findIndex';
 import io from 'socket.io-client';
-import { mapState } from 'vuex';
 import NewEvent from './NewEvent';
 import Vue from 'vue';
 
@@ -32,31 +31,9 @@ export default {
       event: ''
     };
   },
-  computed: {
-    ...mapState('auth', ['user'])
-  },
   methods: {
     fetchEvents() {
       return api.fetch().then(events => { this.events = events; });
-    },
-    postEvent(val) {
-      const event = this.isValidFormat(val);
-      if (!event) return;
-      api.create(event).then(result => { this.dialog = false; });
-    },
-    deleteEvent(id) {
-      return api.destroy({ id }).then(result => { console.log(result); });
-    },
-    attend(id) {
-      return api.attend({ id }).then(result => { console.log(result); });
-    },
-    withdraw(id) {
-      return api.unattend({ id }).then(result => { console.log(result); });
-    },
-    updateEvent(val) {
-      const event = this.isValidFormat(val);
-      if (!event) return;
-      this.getCurrentTimeEvents(event.start);
     }
   },
   created() {

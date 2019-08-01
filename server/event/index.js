@@ -6,11 +6,10 @@ const ctrl = require('./event.controller');
 const HttpStatus = require('http-status');
 const router = require('express').Router();
 
-const { NOT_FOUND } = HttpStatus;
+const { FORBIDDEN, NOT_FOUND } = HttpStatus;
 
 router
-  // TODO: move this to User
-  .get('/login', ctrl.isLoggedIn)
+  .use(auth)
   .get('/', ctrl.fetch)
   .post('/', ctrl.create)
   .delete('/:id', ctrl.destroy)
@@ -25,6 +24,11 @@ router.param('id', (req, res, next, id) => {
       next();
     });
 });
+
+function auth(req, res, next) {
+  if (req.session.userId) return next();
+  return createError(FORBIDDEN, 'Access denied');
+}
 
 module.exports = {
   path: '/events',
