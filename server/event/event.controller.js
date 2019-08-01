@@ -56,7 +56,6 @@ function destroy(req, res) {
 function attend(req, res) {
   const event = req.event;
   const userId = req.session.userId;
-  console.log(userId);
   return event.addAttendees(userId)
     .then(() => event.reload({ include }))
     .then(event => {
