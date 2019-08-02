@@ -2,6 +2,8 @@ const { Event, User } = require('../database');
 const { Op } = require('sequelize');
 const addHours = require('date-fns/add_hours');
 const endOfDay = require('date-fns/end_of_day');
+const { encryptionKey } = require('../../config.js');
+const { decrypt } = require('./encryption.js');
 const Promise = require('bluebird');
 const subHours = require('date-fns/sub_hours');
 const startOfDay = require('date-fns/start_of_day');
@@ -47,7 +49,8 @@ function createJobs({ event, app, min }) {
     return event.getAttendees()
       .then(attendees => {
         attendees.forEach(it => {
-          app.get('webPush').sendNotification(it.subscription, payload);
+          const subscription = decrypt(it.subscription, encryptionKey);
+          app.get('webPush').sendNotification(subscription, payload);
         });
       });
   });

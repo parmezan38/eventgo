@@ -46,7 +46,7 @@ module.exports = {
     sourcePath: process.env.PUBLISHED_CONTENT,
     importPath: process.env.IMPORTED_CONTENT
   },
-  // TODO: make this not hard coded
-  vapidKeyPublic: 'BHqCAqdNc4VCPJPcYBNJCGB12OHHisIYKseGTny3jEOr654nAhdNrdV7P9MypwmpLROSFa-CXjiwifTNZD5NpZQ',
-  vapidKeyPrivate: 'JrCdE6mo_RPjT_jy7JzKV-xeePswZnZyG_kxRKXVHQw'
+  vapidKeyPublic: process.env.VAPID_KEY_PUBLIC,
+  vapidKeyPrivate: process.env.VAPID_KEY_PRIVATE,
+  encryptionKey: process.env.ENCRYPTION_KEY
 };

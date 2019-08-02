@@ -2,7 +2,9 @@
 
 const { createError } = require('../common/errors');
 const { Sequelize, sequelize, User } = require('../common/database');
+const { encryptionKey } = require('../config');
 const Datasheet = require('./datasheet');
+const { encrypt } = require('../common/util/encryption.js');
 const HttpStatus = require('http-status');
 const mime = require('mime');
 const map = require('lodash/map');
@@ -35,11 +37,8 @@ function list({ query: { email, role, filter }, options }, res) {
 }
 
 function create(req, res) {
-  const user = {
-    id: uuidv1(),
-    name: req.body.name,
-    subscription: req.body.subscription
-  };
+  const subscription = encrypt(req.body.subscription, encryptionKey);
+  const user = { id: uuidv1(), name: req.body.name, subscription };
   req.session.userId = user.id;
   req.session.save();
   return User.create(user).then(user => res.jsend.success(user.id));
