@@ -1,7 +1,8 @@
 'use strict';
 
 const { Event, User } = require('../common/database');
-const { getEvents, separateAndCreateJobs } = require('../common/util/jobs');
+const getEvents = require('../common/util/getEvents');
+const { separateAndCreateJobs } = require('../common/util/jobs');
 
 const include = [{
   model: User,

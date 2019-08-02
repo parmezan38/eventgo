@@ -2,7 +2,7 @@
 
 // const { promisify } = require('util');
 const bluebird = require('bluebird');
-const { getEvents } = require('./common/util/jobs');
+const getEvents = require('./common/util/getEvents');
 const sequelize = require('sequelize');
 
 if (process.env.NODE_ENV !== 'production') {
