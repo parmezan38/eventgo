@@ -69,7 +69,7 @@ export default {
     },
     post(val) {
       const event = this.validateEvent(val);
-      api.create(event).then(result => this.$emit('update:visible', false));
+      return api.create(event).then(result => this.close());
     },
     fetchEvents: throttle(function (time) {
       return api.fetch({ params: { time } })
