@@ -9,10 +9,15 @@
       <div v-for="(event, index) in events" :key="index">
         <event
           v-bind="event"
+          :index="index"
           :timelineStart="timelineStart"
           :timelineEnd="timelineEnd"/>
       </div>
     </div>
+    <timeline
+      v-if="events.length > 0"
+      :timelineStart="timelineStart"
+      :timelineEnd="timelineEnd"/>
     <add-button @onClick="dialog = true"/>
   </div>
 </template>
@@ -21,12 +26,14 @@
 import AddButton from '@/main/components/common/AddButton';
 import addMinutes from 'date-fns/add_minutes';
 import api from '@/main/api/event';
-import Event from '@/main/components/event/Event.vue';
+import differenceInMinutes from 'date-fns/difference_in_minutes';
+import Event from './Event.vue';
 import filter from 'lodash/filter';
 import findIndex from 'lodash/findIndex';
 import io from 'socket.io-client';
 import NewEvent from './NewEvent';
 import sortBy from 'lodash/sortBy';
+import Timeline from './Timeline.vue';
 import Vue from 'vue';
 
 export default {
@@ -46,12 +53,18 @@ export default {
       return api.fetch().then(events => this.sortEvents(events));
     },
     sortEvents(val) {
+      if (!val.length) return;
       // Sort events by date
       const events = sortBy(val, ['start']);
+      const timeRange = differenceInMinutes(events[events.length - 1].start, events[0].start);
+      const screenWidth = window.innerWidth;
+      const characters = screenWidth / 10; // 10 = aproximate font width
+      const charactersInMin = timeRange / characters;
       events.forEach(it => {
         it.start = new Date(it.start);
-        it.end = addMinutes(it.start, 30);
-      }); // Temporary, add fixed end date
+        const lengthByName = it.name.length * charactersInMin;
+        it.end = addMinutes(it.start, (25 * charactersInMin) + lengthByName);
+      });
       events.forEach(event => {
         const overlaping = filter(events, it => isOverlaping(event, it));
         if (overlaping.length === 0) return (event.position = 0);
@@ -89,7 +102,7 @@ export default {
       this.sortEvents(this.events);
     });
   },
-  components: { AddButton, Event, NewEvent }
+  components: { AddButton, Event, NewEvent, Timeline }
 };
 
 const isOverlaping = (a, b) => {

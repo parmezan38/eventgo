@@ -2,8 +2,12 @@
   <div
     :style="{
       top: calculateTop(position),
-      width: calculateWidth(start, end),
-      'margin-left': calculateX(start)
+      width: calculateX({
+        start: end, end: start, timelineStart, timelineEnd }),
+      'margin-left': calculateX({
+        start, end: timelineStart, timelineStart, timelineEnd
+      }),
+      'background-color': calculateColor(index)
     }"
     class="my-event">
     <v-btn
@@ -11,32 +15,40 @@
       @click="deleteEvent(id)"
       flat
       class="button button-left">
-      <v-icon :size="18">mdi-close</v-icon>
+      <v-icon :size="20">mdi-close</v-icon>
     </v-btn>
-    <span>{{ name }}</span>
-    <span>{{ start | format }}</span>
-    <span>{{ attendees.length }}</span>
+    <div v-else class="button button-left"></div>
+    <div class="info">
+      <span class="text">{{ name }}</span>
+      <span class="start">
+        <v-icon class="icon">mdi-clock-outline</v-icon>
+        {{ start | format }}</span>
+      <span class="attendees">
+        <v-icon class="icon">mdi-account-multiple</v-icon>
+        {{ attendees.length }}
+      </span>
+    </div>
     <v-btn
       v-if="isAttendee()"
       @click="unattend(id)"
       flat
       class="button button-right">
-      <v-icon :size="18">mdi-account-minus</v-icon>
+      <v-icon :size="20">mdi-account-minus</v-icon>
     </v-btn>
     <v-btn
       v-else
       @click="attend(id)"
       flat
       class="button button-right">
-      <v-icon :size="18">mdi-account-plus</v-icon>
+      <v-icon :size="20">mdi-account-plus</v-icon>
     </v-btn>
   </div>
 </template>
 
 <script>
+import { calculateTop, calculateX } from '@/common/util/calculateTransforms';
 import api from '@/main/api/event';
-import differenceInMinutes from 'date-fns/difference_in_minutes';
-// import endOfDay from 'date-fns/end_of_day';
+import colors from '@/common/util/colors';
 import find from 'lodash/find';
 import format from 'date-fns/format';
 import { mapState } from 'vuex';
@@ -45,6 +57,7 @@ export default {
   name: 'event',
   props: {
     id: { type: Number, required: true },
+    index: { type: Number, required: true },
     creatorId: { type: String, required: true },
     position: { type: Number, required: true },
     name: { type: String, required: true },
@@ -75,17 +88,11 @@ export default {
     unattend(id) {
       return api.unattend({ id }).then(result => { console.log(result); });
     },
-    calculateWidth(start, end) {
-      const duration = differenceInMinutes(end, start);
-      const endOffset = differenceInMinutes(this.timelineEnd, this.timelineStart);
-      console.log(duration / (endOffset / 100) + '%');
-      return (duration / (endOffset / 100) + '%');
-    },
-    calculateTop: val => ((val * 37) + 68 + 'px'),
-    calculateX(start) {
-      const time = differenceInMinutes(start, this.timelineStart);
-      const endOffset = differenceInMinutes(this.timelineEnd, this.timelineStart);
-      return (time / (endOffset / 100)) + '%';
+    calculateTop: val => calculateTop(val),
+    calculateX: data => calculateX(data),
+    calculateColor(index) {
+      // TODO: Loop through colors array
+      return colors[index];
     }
   },
   filters: {
@@ -96,38 +103,71 @@ export default {
 
 <style lang='scss' scoped>
 .my-event {
+  display: flex;
   position: absolute;
-  min-height: 26px;
-  padding: 0;
-  border-radius: 15px;
+  height: 36px;
+  padding: 0 0.1rem;
+  border-radius: 18px;
   color: #fff;
-  overflow: hidden;
-  font-size: 12px;
-  background-color: blue;
-  justify-content: center;
-  text-overflow: ellipsis;
+  font-size: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+}
+
+.info {
+  flex-grow: 2;
   white-space: nowrap;
-  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
 }
 
 .button {
-  min-width: 1.8rem;
-  margin: 0 !important;
+  flex-grow: 1;
+  min-width: 1.3rem;
+  max-width: 1.7rem;
+  margin: auto !important;
   color: #fff;
   background-color: rgba(255, 255, 255, 0) !important;
   border: 0 !important;
   border-radius: 4px;
 }
 
+.text {
+  font-weight: 600;
+}
+
+.start {
+  margin-left: 0.3rem;
+  font-weight: 300;
+
+  .icon {
+    padding-bottom: 0.1rem;
+    color: #fff;
+    font-size: 1.1rem;
+    vertical-align: middle;
+  }
+}
+
+.attendees {
+  font-weight: 300;
+
+  .icon {
+    padding-bottom: 0.2rem;
+    color: #fff;
+    font-size: 1.2rem;
+    vertical-align: middle;
+  }
+}
+
 .button-left {
-  padding: 0 0 0 0.4rem !important;
-  border-top-left-radius: 15px;
-  border-bottom-left-radius: 15px;
+  border-top-left-radius: 18px;
+  border-bottom-left-radius: 18px;
 }
 
 .button-right {
-  padding: 0 0.4rem 0 0 !important;
-  border-top-right-radius: 15px;
-  border-bottom-right-radius: 15px;
+  border-top-right-radius: 18px;
+  border-bottom-right-radius: 18px;
 }
 </style>
