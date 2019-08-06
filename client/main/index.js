@@ -5,9 +5,11 @@ import truncate from 'truncate';
 import VeeValidate from '@/common/validation';
 import Vue from 'vue';
 import Vuetify from 'vuetify';
+import VuetifySnackbar from '@/common/plugins/vuetify-snackbar';
 import VueVisible from 'vue-visible';
 
 Vue.use(Vuetify, { iconfont: 'mdi' });
+Vue.use(VuetifySnackbar);
 Vue.use(VeeValidate, {
   delay: 700,
   fieldsBagName: 'vFields',

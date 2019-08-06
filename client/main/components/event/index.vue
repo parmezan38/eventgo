@@ -15,7 +15,6 @@
       </div>
     </div>
     <timeline
-      v-if="events.length > 0"
       :timelineStart="timelineStart"
       :timelineEnd="timelineEnd"/>
     <add-button @onClick="dialog = true"/>
@@ -63,7 +62,7 @@ export default {
       events.forEach(it => {
         it.start = new Date(it.start);
         const lengthByName = it.name.length * charactersInMin;
-        it.end = addMinutes(it.start, (25 * charactersInMin) + lengthByName);
+        it.end = addMinutes(it.start, (28 * charactersInMin) + lengthByName);
       });
       events.forEach(event => {
         const overlaping = filter(events, it => isOverlaping(event, it));

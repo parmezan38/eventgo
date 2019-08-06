@@ -7,18 +7,18 @@
       'margin-left': calculateX({
         start, end: timelineStart, timelineStart, timelineEnd
       }),
-      'background-color': calculateColor(index)
+      'background-image': calculateGradient(index)
     }"
-    class="my-event">
+    class="event">
     <v-btn
       v-if="user.id === creatorId"
       @click="deleteEvent(id)"
       flat
-      class="button button-left">
+      class="button">
       <v-icon :size="20">mdi-close</v-icon>
     </v-btn>
-    <div v-else class="button button-left"></div>
-    <div class="info">
+    <div v-else class="button"></div>
+    <div class="event-info">
       <span class="text">{{ name }}</span>
       <span class="start">
         <v-icon class="icon">mdi-clock-outline</v-icon>
@@ -30,16 +30,18 @@
     </div>
     <v-btn
       v-if="isAttendee()"
+      :style="{ 'color': calculateColor(index) }"
       @click="unattend(id)"
       flat
-      class="button button-right">
+      class="button">
       <v-icon :size="20">mdi-account-minus</v-icon>
     </v-btn>
     <v-btn
       v-else
+      :style="{ 'color': calculateColor(index) }"
       @click="attend(id)"
       flat
-      class="button button-right">
+      class="button">
       <v-icon :size="20">mdi-account-plus</v-icon>
     </v-btn>
   </div>
@@ -80,16 +82,26 @@ export default {
       });
     },
     deleteEvent(id) {
-      return api.destroy({ id }).then(result => { console.log(result); });
+      return api.destroy({ id })
+        .then(({ message }) => this.$snackbar['success'](message))
+        .catch(() => this.$snackbar['error']('An error occured!'));
     },
     attend(id) {
-      return api.attend({ id }).then(result => { console.log(result); });
+      return api.attend({ id })
+        .then(({ message }) => this.$snackbar['success'](message))
+        .catch(() => this.$snackbar['error']('An error occured!'));
     },
     unattend(id) {
-      return api.unattend({ id }).then(result => { console.log(result); });
+      return api.unattend({ id })
+        .then(({ message }) => this.$snackbar['success'](message))
+        .catch(() => this.$snackbar['error']('An error occured!'));
     },
     calculateTop: val => calculateTop(val),
     calculateX: data => calculateX(data),
+    calculateGradient(index) {
+      // TODO: Loop through colors array
+      return `linear-gradient(to right, ${colors[index]}, 80%, rgba(255, 255, 255, 0.1))`;
+    },
     calculateColor(index) {
       // TODO: Loop through colors array
       return colors[index];
@@ -102,7 +114,7 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-.my-event {
+.event {
   display: flex;
   position: absolute;
   height: 36px;
@@ -115,7 +127,7 @@ export default {
   z-index: 10;
 }
 
-.info {
+.event-info {
   flex-grow: 2;
   white-space: nowrap;
   overflow: hidden;
@@ -131,7 +143,7 @@ export default {
   color: #fff;
   background-color: rgba(255, 255, 255, 0) !important;
   border: 0 !important;
-  border-radius: 4px;
+  border-radius: 18px;
 }
 
 .text {
@@ -159,15 +171,5 @@ export default {
     font-size: 1.2rem;
     vertical-align: middle;
   }
-}
-
-.button-left {
-  border-top-left-radius: 18px;
-  border-bottom-left-radius: 18px;
-}
-
-.button-right {
-  border-top-right-radius: 18px;
-  border-bottom-right-radius: 18px;
 }
 </style>

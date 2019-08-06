@@ -32,13 +32,21 @@ export default {
     };
   },
   methods: {
-    calculateX: data => calculateX(data)
+    calculateX: data => calculateX(data),
+    setTimeline() {
+      const hours = differenceInHours(this.timelineEnd, this.timelineStart);
+      this.timeline = [];
+      const start = setSeconds(setMinutes(this.timelineStart, 0), 0);
+      for (let i = 1; i < hours + 1; i++) this.timeline.push(addHours(start, i));
+    }
+  },
+  watch: {
+    timelineStart() {
+      this.setTimeline();
+    }
   },
   created() {
-    const hours = differenceInHours(this.timelineEnd, this.timelineStart);
-    this.timeline = [];
-    const start = setSeconds(setMinutes(this.timelineStart, 0), 0);
-    for (let i = 1; i < hours + 1; i++) this.timeline.push(addHours(start, i));
+    this.setTimeline();
   },
   filters: {
     format: val => format(val, 'HH')
@@ -50,7 +58,7 @@ export default {
 .time {
   border-left: 2px solid #cfd8dc;
   position: absolute;
-  top: 58px;
+  top: 8px;
   height: 100%;
   color: #78909c;
   z-index: 1;

@@ -1,7 +1,7 @@
 <template>
-  <div id="app" class="system-font-stack">
+  <v-app id="app" class="system-font-stack">
     <router-view/>
-  </div>
+  </v-app>
 </template>
 
 <script>

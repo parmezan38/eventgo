@@ -69,7 +69,12 @@ export default {
     },
     post(val) {
       const event = this.validateEvent(val);
-      return api.create(event).then(result => this.close());
+      return api.create(event)
+        .then(({ message }) => {
+          this.$snackbar['success'](message);
+          this.close();
+        })
+        .catch(() => this.$snackbar['error']('An error occured!'));
     },
     fetchEvents: throttle(function (time) {
       return api.fetch({ params: { time } })

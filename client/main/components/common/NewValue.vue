@@ -11,7 +11,7 @@
               <v-flex xs12 sm10 md10>
                 <v-text-field v-model="value">
                 </v-text-field>
-                <div :class="['message', { 'error' : message.error }]">
+                <div :class="['message', { 'message-error' : message.error }]">
                   {{ message.text }}
                 </div>
               </v-flex>
@@ -60,7 +60,7 @@ export default {
   background-color: #fff;
 }
 
-.error {
+.message-error {
   color: #bd0006;
 }
 </style>
