@@ -15,7 +15,7 @@
       @click="deleteEvent(id)"
       flat
       class="button">
-      <v-icon :size="20">mdi-close</v-icon>
+      <v-icon size="20">mdi-close</v-icon>
     </v-btn>
     <div v-else class="button"></div>
     <div class="event-info">
@@ -34,7 +34,7 @@
       @click="unattend(id)"
       flat
       class="button">
-      <v-icon :size="20">mdi-account-minus</v-icon>
+      <v-icon size="20">mdi-account-minus</v-icon>
     </v-btn>
     <v-btn
       v-else
@@ -42,7 +42,7 @@
       @click="attend(id)"
       flat
       class="button">
-      <v-icon :size="20">mdi-account-plus</v-icon>
+      <v-icon size="20">mdi-account-plus</v-icon>
     </v-btn>
   </div>
 </template>
@@ -100,7 +100,7 @@ export default {
     calculateX: data => calculateX(data),
     calculateGradient(index) {
       // TODO: Loop through colors array
-      return `linear-gradient(to right, ${colors[index]}, 80%, rgba(255, 255, 255, 0.1))`;
+      return `linear-gradient(to right, ${colors[index]}, 73%, rgba(255, 255, 255, 0) 97%, rgba(255, 255, 255, 0))`;
     },
     calculateColor(index) {
       // TODO: Loop through colors array
@@ -132,7 +132,6 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-align: center;
 }
 
 .button {

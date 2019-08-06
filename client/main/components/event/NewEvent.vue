@@ -115,11 +115,12 @@ function formatTime(hours, minutes = 0) {
   display: flex;
   flex-direction: column;
   position: fixed;
-  top: 62%;
+  top: 56%;
   left: 0;
   width: 100%;
   align-items: center;
   justify-content: center;
+  z-index: 300;
 }
 
 .events {
@@ -128,6 +129,7 @@ function formatTime(hours, minutes = 0) {
   min-height: 1rem;
   padding: 0.8rem 1.2rem 0.8rem 1.2rem;
   background-color: #fff;
+  border-radius: 18px;
 }
 
 .event {
