@@ -6,7 +6,7 @@
     <div
       v-if="events.length > 0"
       class="event-container">
-      <div v-for="(event, index) in events" :key="index">
+      <div v-for="(event, index) in sortedEvents" :key="index">
         <event
           v-bind="event"
           :index="index"
@@ -42,19 +42,14 @@ export default {
     return {
       events: [],
       dialog: false,
-      event: '',
-      timelineStart: new Date(),
-      timelineEnd: new Date()
+      event: ''
     };
   },
-  methods: {
-    fetchEvents() {
-      return api.fetch().then(events => this.sortEvents(events));
-    },
-    sortEvents(val) {
-      if (!val.length) return;
+  computed: {
+    sortedEvents() {
+      if (!this.events.length) return;
       // Sort events by date
-      const events = sortBy(val, ['start']);
+      const events = sortBy(this.events, ['start']);
       const timeRange = differenceInMinutes(events[events.length - 1].start, events[0].start);
       const screenWidth = window.innerWidth;
       const characters = screenWidth / 10; // 10 = aproximate font width
@@ -69,9 +64,20 @@ export default {
         if (overlaping.length === 0) return (event.position = 0);
         event.position = findFirstAvailableNumber(overlaping);
       });
-      this.timelineStart = events[0].start;
-      this.timelineEnd = events[events.length - 1].end;
-      this.events = events;
+      return events;
+    },
+    timelineStart() {
+      if (!this.sortedEvents) return new Date();
+      return this.sortedEvents[0].start;
+    },
+    timelineEnd() {
+      if (!this.sortedEvents) return new Date();
+      return this.sortedEvents[this.sortedEvents.length - 1].end;
+    }
+  },
+  methods: {
+    fetchEvents() {
+      return api.fetch().then(events => { this.events = events; });
     }
   },
   created() {
@@ -81,24 +87,22 @@ export default {
     this.fetchEvents();
   },
   mounted() {
-    this.socket.on('test', data => { console.log(data); });
     this.socket.on('created', data => {
+      data.event.start = new Date(data.event.start);
       Vue.set(this.events, this.events.length, data.event);
-      this.sortEvents(this.events);
     });
     this.socket.on('update', data => {
       const index = findIndex(this.events, it => {
         return data.event.id === it.id;
       });
+      data.event.start = new Date(data.event.start);
       Vue.set(this.events, index, data.event);
-      this.sortEvents(this.events);
     });
     this.socket.on('delete', data => {
       const index = findIndex(this.events, it => {
         return data.event.id === it.id;
       });
       Vue.delete(this.events, index);
-      this.sortEvents(this.events);
     });
   },
   components: { AddButton, Event, NewEvent, Timeline }
