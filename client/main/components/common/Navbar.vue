@@ -21,7 +21,7 @@ $container-height: 40px;
 $font-color: #333;
 
 .v-toolbar {
-  z-index: 10;
+  z-index: 20;
 }
 
 .app-brand {
@@ -34,7 +34,7 @@ $font-color: #333;
 
   .app-name {
     color: white;
-    font-size: 20px;
+    font-size: 1.5rem;
     font-weight: 400;
     line-height: $container-height;
   }

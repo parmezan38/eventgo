@@ -24,12 +24,14 @@ html, body {
   padding: 0;
   background-color: #f5f5f5;
   overflow: hidden;
+  overflow-y: hidden !important;
 }
 
 #app {
   height: 100%;
-  overflow-y: scroll;
+  overflow-y: auto !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 </style>

@@ -69,7 +69,7 @@ export default {
       events.forEach(event => {
         const overlaping = filter(events, it => isOverlaping(event, it));
         if (overlaping.length === 0) return (event.position = 0);
-        event.position = findFirstAvailableNumber(overlaping);
+        event.position = findFirstAvailableNumber(overlaping, events.length);
       });
       return events;
     },

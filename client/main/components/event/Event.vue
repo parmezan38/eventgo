@@ -98,18 +98,17 @@ export default {
     calculateTop: val => calculateTop(val),
     calculateX: data => calculateX(data),
     calculateGradient(index) {
-      // TODO: Loop through colors array
-      return `linear-gradient(to right, ${colors[index]}, 73%, rgba(255, 255, 255, 0) 97%, rgba(255, 255, 255, 0))`;
+      const color = colors[getColorIndex(index, colors)];
+      return `linear-gradient(to right, ${color}, 73%, rgba(255, 255, 255, 0) 97%, rgba(255, 255, 255, 0))`;
     },
-    calculateColor(index) {
-      // TODO: Loop through colors array
-      return colors[index];
-    }
+    calculateColor: index => colors[getColorIndex(index, colors)]
   },
   filters: {
     format: val => format(val, 'HH:mm')
   }
 };
+
+const getColorIndex = (index, colors) => index % colors.length;
 </script>
 
 <style lang='scss' scoped>
