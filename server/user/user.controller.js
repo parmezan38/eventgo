@@ -21,7 +21,7 @@ const columns = {
   role: { header: 'Role', width: 30 },
   message: { header: 'Error', width: 30 }
 };
-const inputAttrs = ['email', 'role', 'firstName', 'lastName'];
+const inputAttrs = ['name', 'subscription'];
 
 const createFilter = q => map(['email', 'firstName', 'lastName'],
   it => ({ [it]: { [Op.iLike]: `%${q}%` } }));
@@ -45,6 +45,9 @@ function create(req, res) {
 }
 
 function patch({ params, body }, res) {
+  if ('subscription' in body) {
+    body.subscription = encrypt(body.subscription, encryptionKey);
+  }
   return User.findById(params.id, { paranoid: false })
     .then(user => user || createError(NOT_FOUND, 'User does not exist!'))
     .then(user => user.update(pick(body, inputAttrs)))

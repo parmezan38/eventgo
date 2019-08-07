@@ -1,4 +1,8 @@
-// import api from '@/main/api/user';
+import {
+  createServiceWorker,
+  serviceWorkerExists
+} from '@/common/util/serviceWorker';
+import api from '@/main/api/user';
 import Events from '@/main/components/event';
 import Index from '@/main/components';
 import NewUser from '@/main/components/user';
@@ -32,11 +36,16 @@ const router = new Router({
 router.beforeEach(async (to, from, next) => {
   const isAuthenticationRequired = to.matched.some(it => it.meta.auth);
   if (!isAuthenticationRequired) return next();
-  if (store.state.auth.user && store.state.auth.user.id) return next();
-  // const userId = await api.login();
-  // if (!userId) return next({ name: 'new-user' });
-  // store.commit('auth/login', { id: userId });
-  // return next();
+  if (store.state.auth.user && store.state.auth.user.id) {
+    const id = store.state.auth.user.id;
+    return serviceWorkerExists()
+      .then(result => {
+        if (result) return next();
+        return createServiceWorker();
+      })
+      .then(subscription => api.update({ id, subscription }))
+      .then(() => next());
+  }
   return next({ name: 'new-user' });
 });
 
