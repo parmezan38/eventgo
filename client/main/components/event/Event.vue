@@ -3,9 +3,9 @@
     :style="{
       top: calculateTop(position),
       width: calculateX({
-        start: end, end: start, timelineStart, timelineEnd }),
+        start: end, end: start, timeline }),
       'margin-left': calculateX({
-        start, end: timelineStart, timelineStart, timelineEnd
+        start, end: timeline.start, timeline
       }),
       'background-image': calculateGradient(index)
     }"
@@ -66,8 +66,7 @@ export default {
     start: { type: Date, required: true },
     end: { type: Date, required: true },
     attendees: { type: Array, required: true },
-    timelineStart: { type: Date, required: false, default: new Date() },
-    timelineEnd: { type: Date, required: false, default: new Date() }
+    timeline: { type: Object, required: true }
   },
   data() {
     return {};

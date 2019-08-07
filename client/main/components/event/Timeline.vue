@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div v-for="(time, index) in timeline" :key="index">
+    <div v-for="(time, index) in timeFlags" :key="index">
       <div
         :style="{
           'margin-left': calculateX({
-            start: time, end: timelineStart, timelineStart, timelineEnd
+            start: time, end: timeline.start, timeline
           })
         }"
         class="time">{{ time | format }}h</div>
@@ -23,25 +23,29 @@ import setSeconds from 'date-fns/set_seconds';
 export default {
   name: 'timeline',
   props: {
-    timelineStart: { type: Date, required: false, default: new Date() },
-    timelineEnd: { type: Date, required: false, default: new Date() }
+    timeline: {
+      type: Object,
+      required: false,
+      default: () => {
+        return { start: new Date(), end: new Date() };
+      } }
   },
   data() {
     return {
-      timeline: []
+      timeFlags: []
     };
   },
   methods: {
     calculateX: data => calculateX(data),
     setTimeline() {
-      const hours = differenceInHours(this.timelineEnd, this.timelineStart);
-      this.timeline = [];
-      const start = setSeconds(setMinutes(this.timelineStart, 0), 0);
-      for (let i = 1; i < hours + 1; i++) this.timeline.push(addHours(start, i));
+      const hours = differenceInHours(this.timeline.end, this.timeline.start);
+      this.timeFlags = [];
+      const start = setSeconds(setMinutes(this.timeline.start, 0), 0);
+      for (let i = 1; i < hours + 1; i++) this.timeFlags.push(addHours(start, i));
     }
   },
   watch: {
-    timelineStart() {
+    'timeline.start'() {
       this.setTimeline();
     }
   },
@@ -58,7 +62,7 @@ export default {
 .time {
   border-left: 2px solid #cfd8dc;
   position: absolute;
-  top: 8px;
+  top: 4.3rem;
   height: 100%;
   color: #78909c;
   z-index: 1;

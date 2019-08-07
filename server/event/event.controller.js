@@ -40,7 +40,7 @@ function create(req, res) {
     .then(event => {
       separateAndCreateJobs({ event, app: req.app });
       emitEvent({ req, event, type: 'created' });
-      return res.jsend.success({ message: 'Event created' });
+      return res.jsend.success({ message: `Event ${event.name} created` });
     });
 }
 

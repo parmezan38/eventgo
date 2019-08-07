@@ -10,13 +10,10 @@
         <event
           v-bind="event"
           :index="index"
-          :timelineStart="timelineStart"
-          :timelineEnd="timelineEnd"/>
+          :timeline="timeline"/>
       </div>
     </div>
-    <timeline
-      :timelineStart="timelineStart"
-      :timelineEnd="timelineEnd"/>
+    <timeline :timeline="timeline"/>
     <add-button @onClick="dialog = true"/>
   </div>
 </template>
@@ -53,7 +50,7 @@ export default {
       const timeRange = differenceInMinutes(events[events.length - 1].start, events[0].start);
       const screenWidth = window.innerWidth;
       const characters = screenWidth / 10; // 10 = aproximate font width
-      const charactersInMin = timeRange / characters;
+      const charactersInMin = (timeRange / characters) || 2;
       events.forEach(it => {
         it.start = new Date(it.start);
         const lengthByName = it.name.length * charactersInMin;
@@ -66,13 +63,12 @@ export default {
       });
       return events;
     },
-    timelineStart() {
-      if (!this.sortedEvents) return new Date();
-      return this.sortedEvents[0].start;
-    },
-    timelineEnd() {
-      if (!this.sortedEvents) return new Date();
-      return this.sortedEvents[this.sortedEvents.length - 1].end;
+    timeline() {
+      const events = this.sortedEvents;
+      if (!events || events.length < 1) {
+        return { start: new Date(), end: new Date() };
+      }
+      return { start: events[0].start, end: events[events.length - 1].end };
     }
   },
   methods: {
