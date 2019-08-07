@@ -62,7 +62,7 @@ export default {
 .time {
   border-left: 2px solid #cfd8dc;
   position: absolute;
-  top: 4.3rem;
+  top: 5rem;
   height: 100%;
   color: #78909c;
   z-index: 1;

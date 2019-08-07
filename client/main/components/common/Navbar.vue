@@ -1,90 +1,42 @@
 <template>
-  <nav
-    class="navbar is-fixed-top is-info"
-    role="navigation"
-    aria-label="main navigation">
-    <div class="navbar-brand">
-      <router-link to="/" class="navbar-item">EVENTGO</router-link>
-    </div>
-  </nav>
+  <v-toolbar color="light-blue" app fixed height="64">
+    <router-link :to="{ name: 'events' }" tag="span" class="app-brand">
+      <v-avatar color="white" size="40">
+        <v-icon color="light-blue">mdi-clock-outline</v-icon>
+      </v-avatar>
+      <v-toolbar-title class="app-name">EVENTGO</v-toolbar-title>
+    </router-link>
+    <v-spacer/>
+  </v-toolbar>
 </template>
 
 <script>
 export default {
-  name: 'main-navbar',
-  mounted() {
-    // NOTE: Add appropriate css class to <html> element according to:
-    //       https://bulma.io/documentation/components/navbar/#fixed-navbar
-    document.documentElement.classList.add('has-navbar-fixed-top');
-  }
+  name: 'main-navbar'
 };
 </script>
 
 <style lang="scss" scoped>
-.navbar {
-  min-height: 4rem;
-  box-shadow:
-    0 2px 4px -1px rgba(0,0,0,0.2),
-    0 4px 5px 0 rgba(0,0,0,0.14),
-    0 1px 10px 0 rgba(0,0,0,0.12);
+$container-height: 40px;
+$font-color: #333;
+
+.v-toolbar {
+  z-index: 10;
 }
 
-.navbar-item {
-  font-size: 1.25rem;
-  font-weight: 300;
-}
+.app-brand {
+  cursor: pointer;
 
-.search-container {
-  width: 51%;
-  margin-left: 6%;
-}
-
-.search-container .navbar-item {
-  width: 100%;
-}
-
-.fade-enter-active, .fade-leave-active {
-  transition: all 0.5s;
-}
-
-.fade-enter, .fade-leave-to {
-  opacity: 0;
-}
-
-.user-dropdown {
-  margin-left: 2rem;
-
-  .navbar-dropdown {
-    padding: 0;
+  .v-avatar {
+    float: left;
+    margin-right: 14px;
   }
 
-  .mdi {
-    padding-right: 0.5rem;
-    font-size: 1.5rem;
-  }
-
-  .navbar-link .mdi {
-    font-size: 2rem;
-  }
-
-  .mdi-logout {
-    padding-left: 0.4rem;
-  }
-
-  .navbar-item {
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-  }
-}
-
-.navbar-brand .navbar-item {
-  padding: 0 1.5rem;
-  font-size: 1.5rem;
-  line-height: 2.5rem;
-
-  .mdi {
-    margin-right: 0.5rem;
-    font-size: 2rem;
+  .app-name {
+    color: white;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: $container-height;
   }
 }
 </style>

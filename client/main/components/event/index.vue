@@ -1,5 +1,13 @@
 <template>
   <div>
+    <v-text-field
+      v-model="filter"
+      label="Search"
+      single-line
+      clearable
+      dark
+      color="orange"
+      class="search-field"/>
     <v-layout row justify-center>
       <new-event :visible.sync="dialog"/>
     </v-layout>
@@ -29,6 +37,7 @@ import findIndex from 'lodash/findIndex';
 import io from 'socket.io-client';
 import NewEvent from './NewEvent';
 import sortBy from 'lodash/sortBy';
+import throttle from 'lodash/throttle';
 import Timeline from './Timeline.vue';
 import Vue from 'vue';
 
@@ -38,6 +47,7 @@ export default {
   data() {
     return {
       events: [],
+      filter: null,
       dialog: false,
       event: ''
     };
@@ -72,8 +82,14 @@ export default {
     }
   },
   methods: {
-    fetchEvents() {
-      return api.fetch().then(events => { this.events = events; });
+    fetchEvents: throttle(async function (filter) {
+      return api.fetch({ params: { filter } })
+        .then(events => { this.events = events; });
+    }, 400)
+  },
+  watch: {
+    filter(val) {
+      this.fetchEvents(val);
     }
   },
   created() {
@@ -118,4 +134,15 @@ function findFirstAvailableNumber(arr, timeout = 20) {
 .event-container {
   padding-top: 50rem;
 }
+
+.search-field {
+  position: fixed;
+  top: 1px;
+  left: 50%;
+  width: 40%;
+  margin-left: -20%;
+  z-index: 500;
+  color: #fff;
+}
+
 </style>
