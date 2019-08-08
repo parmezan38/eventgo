@@ -1,11 +1,6 @@
 <template>
   <div class="pull-right">
-    <v-btn
-      @click="$emit('onClick')"
-      dark
-      fab
-      color="orange"
-      class="add-button">
+    <v-btn @click="$emit('onClick')" dark fab color="orange" class="add-button">
       <v-icon>mdi-plus</v-icon>
     </v-btn>
   </div>

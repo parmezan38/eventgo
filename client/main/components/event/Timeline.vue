@@ -2,9 +2,7 @@
   <div>
     <div v-for="(time, index) in timeFlags" :key="index">
       <div
-        :style="{
-          'margin-left': calculateX({ start: time, end: timeline.start, timeline })
-        }"
+        :style="style({ start: time })"
         class="time">{{ time | format }}h</div>
     </div>
   </div>
@@ -29,29 +27,24 @@ export default {
       default: () => ({ start: new Date(), end: new Date() })
     }
   },
-  data() {
-    return {
-      timeFlags: []
-    };
-  },
-  methods: {
-    calculateX: data => calculateX(data),
-    setTimeline() {
+  computed: {
+    timeFlags() {
+      const timeFlags = [];
       const timelineEnd = addMinutes(this.timeline.end, 30);
       const timelineStart = subMinutes(this.timeline.start, 30);
       const hours = differenceInHours(timelineEnd, timelineStart);
-      this.timeFlags = [];
       const start = setSeconds(setMinutes(this.timeline.start, 0), 0);
-      for (let i = 1; i < hours + 1; i++) this.timeFlags.push(addHours(start, i));
+      for (let i = 1; i < hours + 1; i++) timeFlags.push(addHours(start, i));
+      return timeFlags;
     }
   },
-  watch: {
-    'timeline.start'() {
-      this.setTimeline();
+  methods: {
+    style({ start }) {
+      const { timeline } = this;
+      return {
+        'margin-left': calculateX({ start, end: timeline.start, timeline })
+      };
     }
-  },
-  created() {
-    this.setTimeline();
   },
   filters: {
     format: val => format(val, 'HH')
