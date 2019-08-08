@@ -1,3 +1,5 @@
+'use strict';
+
 const {
   decodeBase64,
   decodeUTF8,

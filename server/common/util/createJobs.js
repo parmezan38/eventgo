@@ -1,15 +1,13 @@
+'use strict';
 
 const { encryptionKey } = require('../../config.js');
 const { decrypt } = require('./encryption.js');
 const schedule = require('node-schedule');
 const subMinutes = require('date-fns/sub_minutes');
 
-function separateAndCreateJobs({ event, app }) {
-  const minutes = [10, 5, 0];
-  minutes.forEach(min => { createJobs({ event, app, min }); });
-}
+const minutes = [10, 5, 0];
 
-function createJobs({ event, app, min }) {
+function createJob({ event, app, min }) {
   const { start, name } = event;
   schedule.scheduleJob(subMinutes(start, min), () => {
     const payload = createPayload({ name, min });
@@ -30,6 +28,6 @@ function createPayload({ name, min }) {
   });
 }
 
-module.exports = {
-  separateAndCreateJobs
+module.exports = ({ event, app }) => {
+  minutes.forEach(min => { createJob({ event, app, min }); });
 };

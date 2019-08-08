@@ -1,3 +1,5 @@
+'use strict';
+
 const replace = require('lodash/replace');
 const split = require('lodash/split');
 

@@ -29,11 +29,12 @@ import {
   extractValues,
   validateFormat,
   validateValues
-} from '@/util/eventValidation.js';
+} from '@/common/util/eventValidation';
 import api from '@/main/api/event';
 import format from 'date-fns/format';
 import NewValue from '@/main/components/common/NewValue';
 import setHours from 'date-fns/set_hours';
+import setMilliseconds from 'date-fns/set_milliseconds';
 import setMinutes from 'date-fns/set_minutes';
 import setSeconds from 'date-fns/set_seconds';
 import throttle from 'lodash/throttle';
@@ -76,8 +77,8 @@ export default {
         })
         .catch(() => this.$snackbar['error']('An error occured!'));
     },
-    fetchEvents: throttle(function (time) {
-      return api.fetch({ params: { time } })
+    fetchEvents: throttle(function ({ time, filter }) {
+      return api.fetch({ params: { time, filter } })
         .then(events => { this.events = events; });
     }, 400),
     validateEvent(val) {
@@ -96,7 +97,7 @@ export default {
     update(val) {
       const event = this.validateEvent(val);
       if (!event) return;
-      this.fetchEvents(event.start);
+      this.fetchEvents({ time: event.start, filter: event.name });
     }
   },
   filters: {
@@ -105,8 +106,9 @@ export default {
   components: { NewValue }
 };
 
-function formatTime(hours, minutes = 0) {
-  return setSeconds(setMinutes(setHours(new Date(), hours), minutes), 0);
+function formatTime(h, m = 0) {
+  const date = new Date();
+  return setMilliseconds(setSeconds(setMinutes(setHours(date, h), m), 0), 0);
 }
 </script>
 

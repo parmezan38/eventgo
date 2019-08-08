@@ -1,5 +1,6 @@
 'use strict';
 
+// TODO: separate admin and user functionalities
 // const auth = require('../common/auth').authenticate('jwt');
 const ctrl = require('./user.controller');
 const multer = require('multer');

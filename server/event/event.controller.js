@@ -1,8 +1,7 @@
 'use strict';
 
 const { Event, User } = require('../common/database');
-const getEvents = require('../common/util/getEvents');
-const { separateAndCreateJobs } = require('../common/util/jobs');
+const createJobs = require('../common/util/createJobs');
 
 const include = [{
   model: User,
@@ -19,7 +18,7 @@ function emitEvent({ req, event, type }) {
 
 function fetch(req, res) {
   const { query, app } = req;
-  return getEvents({ query, app })
+  return Event.getEvents({ query, app })
     .then(events => {
       const filteredEvents = events.filter(it => {
         const { id, name, creatorId, start, attendees } = it;
@@ -38,8 +37,8 @@ function create(req, res) {
       return event.reload({ include });
     })
     .then(event => {
-      separateAndCreateJobs({ event, app: req.app });
-      emitEvent({ req, event, type: 'created' });
+      createJobs({ event, app: req.app });
+      emitEvent({ req, event, type: 'create' });
       return res.jsend.success({ message: `Event ${event.name} created` });
     });
 }

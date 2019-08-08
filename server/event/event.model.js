@@ -1,6 +1,14 @@
 'use strict';
 
-const { Model } = require('sequelize');
+const { Model, Op } = require('sequelize');
+const addHours = require('date-fns/add_hours');
+const createJobs = require('../common/util/createJobs');
+const createFilter = require('../common/util/createFilter');
+const endOfDay = require('date-fns/end_of_day');
+const Promise = require('bluebird');
+const subHours = require('date-fns/sub_hours');
+const startOfDay = require('date-fns/start_of_day');
+const subMinutes = require('date-fns/sub_minutes');
 
 class Event extends Model {
   static fields(DataTypes) {
@@ -64,6 +72,37 @@ class Event extends Model {
       paranoid: true,
       freezeTableName: true
     };
+  }
+
+  static getEvents({ jobs, app, query = {} }) {
+    const today = new Date();
+    const { time, filter } = query;
+    const where = { start: { [Op.between]: [startOfDay(today), endOfDay(today)] } };
+    if (time && filter) {
+      where[Op.or] = [
+        { start: { [Op.between]: [subHours(time, 1), addHours(time, 1)] } },
+        ...createFilter(filter, ['name'])
+      ];
+    } else if (!time && filter) {
+      where[Op.or] = createFilter(filter, ['name']);
+    } else if (time && !filter) {
+      where.start = { [Op.between]: [subHours(time, 1), addHours(time, 1)] };
+    }
+    if (jobs) {
+      where.start = { [Op.between]: [subMinutes(today, 11), endOfDay(today)] };
+    }
+    const include = [{
+      model: this.sequelize.models.user,
+      as: 'attendees',
+      attributes: ['id', 'subscription']
+    }];
+    return this.findAll({ where, include })
+      .then(events => {
+        if (jobs) {
+          return Promise.map(events, event => createJobs({ event, app }));
+        }
+        return events;
+      });
   }
 }
 

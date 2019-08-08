@@ -23,5 +23,6 @@ export default {
   right: 2vw;
   bottom: 1vh;
   z-index: 10;
+  background-image: radial-gradient(farthest-corner at 23px 18px, #ff9800, 80%, #f57f17 100%);
 }
 </style>

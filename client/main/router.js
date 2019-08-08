@@ -40,8 +40,7 @@ router.beforeEach(async (to, from, next) => {
     const id = store.state.auth.user.id;
     return serviceWorkerExists()
       .then(result => {
-        if (result) return next();
-        return createServiceWorker();
+        return result ? next() : createServiceWorker();
       })
       .then(subscription => api.update({ id, subscription }))
       .then(() => next());

@@ -2,7 +2,7 @@
   <new-value
     :visible="dialog"
     @close="dialog = false"
-    @post="create"
+    @post="post"
     title="Create Username"
     type="name"/>
 </template>
@@ -26,7 +26,7 @@ export default {
   },
   methods: {
     ...mapMutations('auth', ['login']),
-    async create(name) {
+    async post(name) {
       return createServiceWorker()
         .then(subscription => api.create({ name, subscription }))
         .then(id => {

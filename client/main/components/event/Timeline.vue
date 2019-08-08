@@ -3,9 +3,7 @@
     <div v-for="(time, index) in timeFlags" :key="index">
       <div
         :style="{
-          'margin-left': calculateX({
-            start: time, end: timeline.start, timeline
-          })
+          'margin-left': calculateX({ start: time, end: timeline.start, timeline })
         }"
         class="time">{{ time | format }}h</div>
     </div>
@@ -14,11 +12,13 @@
 
 <script>
 import addHours from 'date-fns/add_hours';
+import addMinutes from 'date-fns/add_minutes';
 import { calculateX } from '@/common/util/calculateTransforms';
 import differenceInHours from 'date-fns/difference_in_hours';
 import format from 'date-fns/format';
 import setMinutes from 'date-fns/set_minutes';
 import setSeconds from 'date-fns/set_seconds';
+import subMinutes from 'date-fns/sub_minutes';
 
 export default {
   name: 'timeline',
@@ -26,9 +26,8 @@ export default {
     timeline: {
       type: Object,
       required: false,
-      default: () => {
-        return { start: new Date(), end: new Date() };
-      } }
+      default: () => ({ start: new Date(), end: new Date() })
+    }
   },
   data() {
     return {
@@ -38,7 +37,9 @@ export default {
   methods: {
     calculateX: data => calculateX(data),
     setTimeline() {
-      const hours = differenceInHours(this.timeline.end, this.timeline.start);
+      const timelineEnd = addMinutes(this.timeline.end, 30);
+      const timelineStart = subMinutes(this.timeline.start, 30);
+      const hours = differenceInHours(timelineEnd, timelineStart);
       this.timeFlags = [];
       const start = setSeconds(setMinutes(this.timeline.start, 0), 0);
       for (let i = 1; i < hours + 1; i++) this.timeFlags.push(addHours(start, i));
