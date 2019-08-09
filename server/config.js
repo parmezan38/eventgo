@@ -7,7 +7,7 @@ module.exports = {
   port: process.env.PORT,
   ip: process.env.IP,
   useHistoryApiFallback: process.env.HISTORY_API_FALLBACK,
-  staticFolder: path.resolve(__dirname, '../dist'),
+  staticFolder: path.resolve(__dirname, '../client/main/static'),
   uploadLimit: '10mb',
   cors: {
     allowedOrigins: [],
