@@ -8,7 +8,7 @@ const subMinutes = require('date-fns/sub_minutes');
 const jobs = schedule.scheduledJobs;
 const minutes = [10, 5, 0];
 
-const generateName = ({ name, min }) => `${name}_${min}`;
+const generateName = ({ id, min }) => `${id}_${min}`;
 
 function createJobs({ event, app }) {
   minutes.forEach(min => { createJob({ event, app, min }); });
@@ -16,7 +16,7 @@ function createJobs({ event, app }) {
 
 function createJob({ event, app, min }) {
   const time = subMinutes(event.start, min);
-  const name = generateName({ name: event.name, min });
+  const name = generateName({ id: event.id, min });
   schedule.scheduleJob(name, time, () => jobContent({ event, app, min }));
 }
 
@@ -40,7 +40,7 @@ function createPayload({ name, min }) {
 
 function deleteJobs(event) {
   minutes.forEach(it => {
-    jobs[generateName({ name: event.name, min: it })].cancel();
+    jobs[generateName({ id: event.id, min: it })].cancel();
   });
 }
 
