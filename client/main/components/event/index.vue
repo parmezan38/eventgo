@@ -55,7 +55,7 @@ export default {
       const screenWidth = window.innerWidth;
       const characterWidth = 10; // 10 = aproximate font width
       const characters = screenWidth / characterWidth;
-      const minutesPerCharacter = (timeRange / characters) || 2;
+      const minutesPerCharacter = ((timeRange / characters) < 2) || 2;
       events.forEach(it => setEventDefaults({ event: it, minutesPerCharacter }));
       events.forEach(event => {
         const overlapingEvents = filter(events, it => isOverlaping(event, it));

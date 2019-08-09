@@ -1,7 +1,6 @@
 'use strict';
 
 const { Event, User } = require('../common/database');
-const createJobs = require('../common/util/createJobs');
 
 const include = [{
   model: User,
@@ -31,13 +30,12 @@ function fetch(req, res) {
 function create(req, res) {
   const event = req.body;
   event.creatorId = req.session.userId;
-  return Event.create(event)
+  return Event.create(event, { app: req.app })
     .then(async event => {
       await event.setAttendees(req.session.userId);
       return event.reload({ include });
     })
     .then(event => {
-      createJobs({ event, app: req.app });
       emitEvent({ req, event, type: 'create' });
       return res.jsend.success({ message: `Event ${event.name} created` });
     });

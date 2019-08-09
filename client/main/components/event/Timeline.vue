@@ -30,8 +30,8 @@ export default {
   computed: {
     timeFlags() {
       const timeFlags = [];
-      const timelineEnd = addMinutes(this.timeline.end, 30);
-      const timelineStart = subMinutes(this.timeline.start, 30);
+      const timelineEnd = addMinutes(this.timeline.end, 10);
+      const timelineStart = subMinutes(this.timeline.start, 10);
       const hours = differenceInHours(timelineEnd, timelineStart);
       const start = setSeconds(setMinutes(this.timeline.start, 0), 0);
       for (let i = 1; i < hours + 1; i++) timeFlags.push(addHours(start, i));
