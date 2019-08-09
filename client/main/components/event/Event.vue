@@ -5,10 +5,10 @@
         v-if="user.id === creatorId"
         @click="deleteEvent(id)"
         flat
-        class="button">
+        class="custom-button">
         <v-icon size="20">mdi-close</v-icon>
       </v-btn>
-      <div v-else class="button"></div>
+      <div v-else class="custom-button"></div>
       <div class="event-info">
         <span class="text">{{ name }}</span>
         <span class="start">
@@ -24,7 +24,7 @@
         :style="buttonStyle"
         @click="unattend(id)"
         flat
-        class="button">
+        class="custom-button">
         <v-icon size="20">mdi-account-minus</v-icon>
       </v-btn>
       <v-btn
@@ -32,7 +32,7 @@
         :style="buttonStyle"
         @click="attend(id)"
         flat
-        class="button">
+        class="custom-button">
         <v-icon size="20">mdi-account-plus</v-icon>
       </v-btn>
     </div>
@@ -129,7 +129,7 @@ const getColorIndex = (index, colors) => index % colors.length;
   text-overflow: ellipsis;
 }
 
-.button {
+.custom-button {
   flex-grow: 1;
   min-width: 1.3rem;
   max-width: 1.7rem;

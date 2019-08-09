@@ -40,7 +40,8 @@ function createPayload({ name, min }) {
 
 function deleteJobs(event) {
   minutes.forEach(it => {
-    jobs[generateName({ id: event.id, min: it })].cancel();
+    const job = jobs[generateName({ id: event.id, min: it })];
+    if (job) job.cancel();
   });
 }
 

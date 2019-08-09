@@ -22,7 +22,7 @@ $font-color: #333;
 
 .v-toolbar {
   z-index: 20;
-  background-image: linear-gradient(to bottom, #03A9F4, 80%, #039BE5 100%);
+  background-image: linear-gradient(to bottom, #03aff4, 80%, #039be5 100%);
 }
 
 .app-brand {
