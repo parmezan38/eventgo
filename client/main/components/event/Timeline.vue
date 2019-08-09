@@ -3,7 +3,8 @@
     <div v-for="(time, index) in timeFlags" :key="index">
       <div
         :style="style({ start: time })"
-        class="time">{{ time | format }}h</div>
+        class="time top">{{ time | format }}h</div>
+      <div :style="style({ start: time })" class="time bottom"></div>
     </div>
   </div>
 </template>
@@ -56,11 +57,20 @@ export default {
 .time {
   border-left: 2px solid #cfd8dc;
   position: absolute;
-  top: 5rem;
-  height: 100%;
+  height: 20%;
   color: #78909c;
   z-index: 1;
-  border-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(226, 226, 226, 1) 1%, rgba(255, 255, 255, 0) 20%, rgba(255, 255, 255, 0) 80%, rgba(226, 226, 226, 1) 99%, rgba(255, 255, 255, 0) 100%);
+}
+
+.time.top {
+  top: 5rem;
+  border-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(226, 226, 226, 1) 1%, rgba(255, 255, 255, 0) 80%);
+  border-image-slice: 1;
+}
+
+.time.bottom {
+  bottom: 0;
+  border-image: linear-gradient(to top, rgba(226, 226, 226, 1) 0%, rgba(255, 255, 255, 0) 60%);
   border-image-slice: 1;
 }
 </style>
