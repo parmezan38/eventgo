@@ -9,10 +9,7 @@
       type="event"/>
     <v-expand-transition>
       <div v-show="events.length" class="events-container">
-        <div
-          height="100"
-          width="100"
-          class="events">
+        <div height="100" width="100" class="events">
           <div v-for="(event, index) in events" :key="index" class="event">
             {{ event.name }}
             {{ event.start | format }}

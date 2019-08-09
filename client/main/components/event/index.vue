@@ -96,21 +96,17 @@ export default {
     this.fetchEvents();
   },
   mounted() {
-    this.socket.on('create', data => {
-      data.event.start = new Date(data.event.start);
-      Vue.set(this.events, this.events.length, data.event);
+    this.socket.on('create', ({ event }) => {
+      event.start = new Date(event.start);
+      Vue.set(this.events, this.events.length, event);
     });
-    this.socket.on('update', data => {
-      const index = findIndex(this.events, it => {
-        return data.event.id === it.id;
-      });
-      data.event.start = new Date(data.event.start);
-      Vue.set(this.events, index, data.event);
+    this.socket.on('update', ({ event }) => {
+      const index = findIndex(this.events, ['id', event.id]);
+      event.start = new Date(event.start);
+      Vue.set(this.events, index, event);
     });
-    this.socket.on('delete', data => {
-      const index = findIndex(this.events, it => {
-        return data.event.id === it.id;
-      });
+    this.socket.on('delete', ({ event }) => {
+      const index = findIndex(this.events, ['id', event.id]);
       Vue.delete(this.events, index);
     });
   },
@@ -124,9 +120,9 @@ function isOverlaping(a, b) {
 function setEventDefaults({ event, minutesPerCharacter }) {
   const lengthByName = event.name.length * minutesPerCharacter;
   const contentWidth = 28;
+  const width = (contentWidth * minutesPerCharacter) + lengthByName;
   event.start = new Date(event.start);
-  event.end = addMinutes(event.start,
-    (contentWidth * minutesPerCharacter) + lengthByName);
+  event.end = addMinutes(event.start, width);
   event.visible = true;
   event.position = null;
 }

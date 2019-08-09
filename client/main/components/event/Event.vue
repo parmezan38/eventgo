@@ -61,9 +61,6 @@ export default {
     attendees: { type: Array, required: true },
     timeline: { type: Object, required: true }
   },
-  data() {
-    return {};
-  },
   computed: {
     ...mapState('auth', ['user']),
     style() {

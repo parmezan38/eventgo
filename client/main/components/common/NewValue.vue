@@ -7,7 +7,7 @@
           <v-icon size="50" class="icon">mdi-close</v-icon>
         </v-btn>
         <div class="text-field-container">
-          <v-text-field v-model="value" class="text-field"/>
+          <v-text-field v-model="value" class="text-field" color="orange"/>
           <div :class="['message', { 'message-error' : message.error }]">
             {{ message.text }}
           </div>
