@@ -25,7 +25,7 @@ module.exports = {
       name: process.env.EMAIL_SENDER_NAME,
       address: process.env.EMAIL_SENDER_ADDRESS
     },
-    user: process.env.EMAIL_USER,
+    admin: process.env.EMAIL_ADMIN,
     password: process.env.EMAIL_PASSWORD,
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT || null,

@@ -23,16 +23,6 @@
             label="E-mail"
             data-vv-name="email"
             class="mb-3"/>
-          <v-select
-            v-validate="'required'"
-            v-model="user.role"
-            :items="roles"
-            :error-messages="vErrors.collect('role')"
-            @focus="focusTrap.pause()"
-            @blur="focusTrap.unpause()"
-            label="Role"
-            data-vv-name="role"
-            class="mb-3"/>
           <v-text-field
             v-validate="'required|alpha|min:2|max:50'"
             v-model="user.firstName"
@@ -61,10 +51,7 @@
 <script>
 import api from '@/admin/api/user';
 import cloneDeep from 'lodash/cloneDeep';
-import humanize from 'humanize-string';
 import isEmpty from 'lodash/isEmpty';
-import map from 'lodash/map';
-import { role } from '@/../common/config';
 import { withFocusTrap } from '@/common/focustrap';
 import { withValidation } from '@/common/validation';
 
@@ -73,8 +60,7 @@ const resetUser = () => {
   return {
     firstName: '',
     lastName: '',
-    email: '',
-    role: null
+    email: ''
   };
 };
 
@@ -99,9 +85,6 @@ export default {
       set(value) {
         if (!value) this.close();
       }
-    },
-    roles() {
-      return map(role, it => ({ text: humanize(it), value: it }));
     },
     isNewUser() {
       return !this.user.id;

@@ -1,5 +1,5 @@
-import auth from '@/common/store/modules/auth';
-import { auth as authPlugin } from '@/common/store/plugins';
+import admin from '@/common/store/modules/admin';
+import { auth as authPlugin } from './plugins';
 import Vue from 'vue';
 import Vuex from 'vuex';
 
@@ -9,7 +9,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
-    auth
+    admin
   },
   plugins: [authPlugin({ key: 'APP_USER' })],
   strict: !isProduction

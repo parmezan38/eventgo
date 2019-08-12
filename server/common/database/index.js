@@ -13,6 +13,7 @@ const Sequelize = require('sequelize');
 const Umzug = require('umzug');
 
 // Require models.
+const Admin = require('../../admin/admin.model');
 const User = require('../../user/user.model');
 const Event = require('../../event/event.model');
 const Attendee = require('../../attendee/attendee.model');
@@ -69,6 +70,7 @@ function initialize() {
 }
 
 const models = {
+  Admin: defineModel(Admin),
   User: defineModel(User),
   Event: defineModel(Event),
   Attendee: defineModel(Attendee)

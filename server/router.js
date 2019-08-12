@@ -1,5 +1,6 @@
 'use strict';
 
+const admin = require('./admin');
 const event = require('./event');
 const express = require('express');
 const get = require('lodash/get');
@@ -10,6 +11,7 @@ const router = express.Router();
 // TODO: Remove this demo route!
 router.use('/ping', (_, res) => res.jsend.success(null));
 router.use('/', parseOptions);
+router.use(admin.path, admin.router);
 router.use(user.path, user.router);
 router.use(event.path, event.router);
 
