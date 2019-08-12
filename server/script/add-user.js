@@ -2,13 +2,10 @@
 
 const { getValidator, setLogging } = require('../common/database/helpers');
 const { prompt } = require('inquirer');
-const { role } = require('../../common/config');
-const { User } = require('../common/database');
-const humanize = require('humanize-string');
+const { Admin } = require('../common/database');
 const isEmail = require('is-email-like');
-const map = require('lodash/map');
 
-setLogging(User, false);
+setLogging(Admin, false);
 
 const questions = [{
   type: 'input',
@@ -20,26 +17,21 @@ const questions = [{
   mask: '*',
   name: 'password',
   message: 'Enter password:',
-  validate: getValidator(User, 'password')
+  validate: getValidator(Admin, 'password')
 }, {
   type: 'string',
   name: 'firstName',
   message: 'Enter first name:',
-  validate: getValidator(User, 'firstName')
+  validate: getValidator(Admin, 'firstName')
 }, {
   type: 'string',
   name: 'lastName',
   message: 'Enter last name:',
-  validate: getValidator(User, 'lastName')
-}, {
-  type: 'list',
-  name: 'role',
-  choices: map(role, value => ({ name: humanize(value), value })),
-  message: 'Select role:'
+  validate: getValidator(Admin, 'lastName')
 }];
 
 prompt(questions)
-  .then(data => console.log() || User.create(data))
-  .then(user => console.log(`User created: ${user.email}`))
+  .then(data => console.log() || Admin.create(data))
+  .then(admin => console.log(`Admin created: ${admin.email}`))
   .catch(err => console.error(err.message) || 1)
   .then((code = 0) => process.exit(code));

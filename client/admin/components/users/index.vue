@@ -34,7 +34,6 @@
                 <v-checkbox v-model="props.selected" primary hide-details/>
               </td>
               <td>{{ props.item.email }}</td>
-              <td>{{ props.item.role }}</td>
               <td>{{ props.item.firstName }}</td>
               <td>{{ props.item.lastName }}</td>
               <td class="no-wrap">{{ props.item.createdAt | formatDate }}</td>
@@ -75,7 +74,6 @@ import UserDialog from './UserDialog';
 const defaultPage = () => ({ sortBy: 'updatedAt', descending: true, page: 1 });
 const headers = () => [
   { text: 'Email', value: 'email' },
-  { text: 'Role', value: 'role' },
   { text: 'First Name', value: 'firstName' },
   { text: 'Last Name', value: 'lastName' },
   { text: 'Date Created', value: 'createdAt' },

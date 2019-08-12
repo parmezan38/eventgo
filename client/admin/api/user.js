@@ -2,10 +2,10 @@ import { extractData, processParams } from '@/common/api/helpers';
 import request from '@/common/api/request';
 
 const url = {
-  root: '/users',
-  resource: it => `/users/${it.id}`,
-  invite: it => `/users/${it.id}/invite`,
-  import: '/users/import'
+  root: '/admins',
+  resource: it => `/admins/${it.id}`,
+  invite: it => `/admins/${it.id}/invite`,
+  import: '/admins/import'
 };
 
 function fetch(params = {}) {

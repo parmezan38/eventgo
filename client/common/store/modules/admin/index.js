@@ -2,7 +2,7 @@ import * as actions from './actions';
 import * as mutations from './mutations';
 
 const state = {
-  user: null
+  admin: null
 };
 
 export default {

@@ -3,34 +3,24 @@
 const { createError } = require('../common/errors');
 const { Sequelize, sequelize, User } = require('../common/database');
 const { encryptionKey } = require('../config');
-const Datasheet = require('./datasheet');
 const { encrypt } = require('../common/util/encryption.js');
 const HttpStatus = require('http-status');
-const mime = require('mime');
 const map = require('lodash/map');
 const pick = require('lodash/pick');
 const uuidv1 = require('uuid/v1');
 
-const { ACCEPTED, NOT_FOUND } = HttpStatus;
+const { NOT_FOUND } = HttpStatus;
 const { Op } = Sequelize;
 
-const columns = {
-  email: { header: 'Email', width: 30 },
-  firstName: { header: 'First Name', width: 30 },
-  lastName: { header: 'Last Name', width: 30 },
-  role: { header: 'Role', width: 30 },
-  message: { header: 'Error', width: 30 }
-};
 const inputAttrs = ['name', 'subscription'];
 
 const createFilter = q => map(['email', 'firstName', 'lastName'],
   it => ({ [it]: { [Op.iLike]: `%${q}%` } }));
 
-function list({ query: { email, role, filter }, options }, res) {
+function list({ query: { email, filter }, options }, res) {
   const where = { [Op.and]: [] };
   if (filter) where[Op.or] = createFilter(filter);
   if (email) where[Op.and].push({ email });
-  if (role) where[Op.and].push({ role });
   return User.findAndCountAll({ where, ...options }).then(({ rows, count }) => {
     return res.jsend.success({ items: map(rows, 'profile'), total: count });
   });
@@ -51,7 +41,7 @@ function patch({ params, body }, res) {
   return User.findById(params.id, { paranoid: false })
     .then(user => user || createError(NOT_FOUND, 'User does not exist!'))
     .then(user => user.update(pick(body, inputAttrs)))
-    .then(user => res.jsend.success(user.profile));
+    .then(user => res.jsend.success(user));
 }
 
 function destroy({ params }, res) {
@@ -67,50 +57,10 @@ function login(req, res) {
   return res.jsend.success(req.session.userId || false);
 }
 
-function invite({ params, origin }, res) {
-  return User.findById(params.id, { paranoid: false })
-    .then(user => user || createError(NOT_FOUND, 'User does not exist!'))
-    .then(user => User.invite(user, { origin }))
-    .then(() => res.status(ACCEPTED).end());
-}
-
-function forgotPassword({ origin, body }, res) {
-  const { email } = body;
-  return User.find({ where: { email } })
-    .then(user => user || createError(NOT_FOUND, 'User not found!'))
-    .then(user => user.sendResetToken({ origin }))
-    .then(() => res.end());
-}
-
-function resetPassword({ body, params }, res) {
-  const { password, token } = body;
-  return User.find({ where: { token } })
-    .then(user => user || createError(NOT_FOUND, 'Invalid token!'))
-    .then(user => {
-      user.password = password;
-      return user.save();
-    })
-    .then(() => res.end());
-}
-
-async function bulkImport({ body, file, origin }, res) {
-  const users = (await Datasheet.load(file)).toJSON({ include: inputAttrs });
-  const errors = await User.import(users, { origin: origin });
-  if (!errors) return res.end();
-  const creator = 'APP_STARTER';
-  const format = body.format || mime.getExtension(file.mimetype);
-  const report = (new Datasheet({ columns, data: errors })).toWorkbook({ creator });
-  return report.send(res, { format });
-}
-
 module.exports = {
   list,
-  bulkImport,
   create,
   patch,
   destroy,
-  login,
-  invite,
-  forgotPassword,
-  resetPassword
+  login
 };

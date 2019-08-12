@@ -2,7 +2,7 @@
 
 const { auth: config = {} } = require('../../config');
 const { ExtractJwt, Strategy } = require('passport-jwt');
-const { User } = require('../database');
+const { Admin } = require('../database');
 const passport = require('passport');
 
 const jwtOptions = {
@@ -12,13 +12,13 @@ const jwtOptions = {
 };
 
 passport.use(new Strategy(jwtOptions, (payload, done) => {
-  return User.findByPk(payload.id)
-    .then(user => done(null, user || false))
+  return Admin.findByPk(payload.id)
+    .then(admin => done(null, admin || false))
     .error(err => done(err, false));
 }));
 
-passport.serializeUser((user, done) => done(null, user));
-passport.deserializeUser((user, done) => done(null, user));
+passport.serializeUser((admin, done) => done(null, admin));
+passport.deserializeUser((admin, done) => done(null, admin));
 
 module.exports = {
   initialize(options = {}) {

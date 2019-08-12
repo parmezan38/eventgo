@@ -5,14 +5,8 @@ export const login = ({ commit }, credentials) => {
     .then(user => commit('login', user) || user);
 };
 
-export const logout = () => {
-  return auth.logout();
-};
+export const logout = () => auth.logout();
 
-export const forgotPassword = (context, { email }) => {
-  return auth.forgotPassword(email);
-};
+export const forgotPassword = (context, { email }) => auth.forgotPassword(email);
 
-export const resetPassword = (context, payload) => {
-  return auth.resetPassword(payload);
-};
+export const resetPassword = (context, payload) => auth.resetPassword(payload);

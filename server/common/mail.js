@@ -13,7 +13,7 @@ logger.info(getConfig(server), '📧  SMTP client created');
 
 const send = promisify(server.send.bind(server));
 
-const resetUrl = (origin, user) => `${origin}/#/auth/reset-password/${user.token}`;
+const resetUrl = (origin, admin) => `${origin}/#/auth/reset-password/${admin.token}`;
 
 module.exports = {
   send,
@@ -21,10 +21,10 @@ module.exports = {
   resetPassword
 };
 
-function invite(user, { origin }) {
-  const href = resetUrl(origin, user);
+function invite(admin, { origin }) {
+  const href = resetUrl(origin, admin);
   const { hostname } = parseUrl(href);
-  const recipient = user.email;
+  const recipient = admin.email;
   const message = `
     An account has been created for you on ${hostname}.
     Please click <a href="${href}">here</a> to complete your registration.`;
@@ -38,9 +38,9 @@ function invite(user, { origin }) {
   });
 }
 
-function resetPassword(user, { origin }) {
-  const href = resetUrl(origin, user);
-  const recipient = user.email;
+function resetPassword(admin, { origin }) {
+  const href = resetUrl(origin, admin);
+  const recipient = admin.email;
   const message = `
     You requested password reset.
     Please click <a href="${href}">here</a> to complete the reset process.`;
