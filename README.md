@@ -13,7 +13,13 @@ EVENTGO is and event creation and subscription app with notification support. It
 
 - Configure the ```.env``` file with your information to run the app
 
-- Run ```npm run generate-keys``` and copy the keys in the ```.env``` file 
+- Run ```npm run generate-keys``` and copy the keys in the ```.env``` file
+
+- If having issues with generating keys, or using Windows, try:
+
+  ```npm run generate-encryption-key```
+
+  ```npm run generate-vapid-keys```
 
 - Start the servers:
 
