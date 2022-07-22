@@ -85,7 +85,7 @@
     "express-session": "^1.16.2",
     "faker": "^4.1.0",
     "fecha": "^2.3.3",
-    "file-type": "^10.1.0",
+    "file-type": "^16.5.4",
     "focus-trap": "^3.0.0",
     "fs-blob-store": "^5.2.1",
     "fuzzysearch": "^1.0.3",
